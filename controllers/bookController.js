@@ -86,7 +86,8 @@ exports.book_create_post = function(req, res, next) {
     req.checkBody('summary', 'Summary must not be empty').notEmpty();
     req.checkBody('isbn', 'ISBN must not be empty').notEmpty();
     
-    req.sanitize('title').escape();
+    //req.sanitize('title').escape();
+    req.sanitize('title');
     req.sanitize('author').escape();
     req.sanitize('summary').escape();
     req.sanitize('isbn').escape();

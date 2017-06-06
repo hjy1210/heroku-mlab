@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  h1 title
+  
+  ul
+  each pset in pset_list
+    li 
+      a(href=pset.url) #{pset._id} 
+
+  else
+    li There are no books.

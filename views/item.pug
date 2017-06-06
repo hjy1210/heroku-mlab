@@ -1,0 +1,10 @@
+if item.head
+  p !{item.head}
+table
+  each obj,index in item.choices
+    tr
+      td(valign="top") #[input(type='radio' name=itemindex value=index)]
+      td(align="left") !{obj}
+if item.tail
+  p !{item.tail}
+br
