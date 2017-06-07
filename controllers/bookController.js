@@ -2,6 +2,7 @@ var Book = require('../models/book');
 var Author = require('../models/author');
 var Genre = require('../models/genre');
 var BookInstance = require('../models/bookinstance');
+var Pset = require('../models/pset');
 
 var async = require('async');
 
@@ -23,6 +24,9 @@ exports.index = function(req, res) {
         genre_count: function(callback) {
             Genre.count(callback);
         },
+        pset_count: function(callback){
+            Pset.count(callback)
+        }
     }, function(err, results) {
         res.render('index', { title: 'Local Library Home', error: err, data: results });
     });

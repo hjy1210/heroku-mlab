@@ -1,0 +1,10 @@
+extends layout
+
+block content
+  if head
+    p !{head}
+  if items && items.length>0
+    each item,itemindex in items
+      include ./item.pug
+  if tail
+    p !{tail}

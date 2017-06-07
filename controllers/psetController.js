@@ -2,7 +2,7 @@ var Pset = require('../models/pset');
 
 var async = require('async');
 
-var data={
+/*var data={
     psets:[{
       items:[{ 
         head: '下列哪一個選項是方程式 \\(7x^5-2x^4+14x^3-4x^2+7x-2=0\\) 的根？',
@@ -44,55 +44,44 @@ var data={
         "She displays a replica of the navigational equipment used in Columbus’ time"]
       }]
     }]
-  }
+  }*/
 
-exports.index = function(req, res) {   
-    
+exports.index = function (req, res) {
+
     async.parallel({
-        pset_count: function(callback) {
+        pset_count: function (callback) {
             Pset.count(callback);
         }
-    }, function(err, results) {
+    }, function (err, results) {
         res.render('psetindex', { title: 'Local Psets Home', error: err, data: results });
     });
 };
 // Display list of all books
-exports.pset_list = function(req, res, next) {
-  /*Pset.find({})
-    .populate('author')
-    .exec(function (err, list_psets) {
-      if (err) { return next(err); }
-      //Successful, so render
-      res.render('pset_list', { title: 'Pset List', pset_list: list_psets });
-    });*/
-  res.render('psets', data);
+exports.pset_list = function (req, res, next) {
+    Pset.find({})
+      .exec(function (err, list_psets) {
+        if (err) { return next(err); }
+        //Successful, so render
+        res.render('psets', { psets: list_psets });
+      });
 };
 
 // Display detail page for a specific book
-exports.pset_detail = function(req, res, next) {
-  /*async.parallel({
-    book: function(callback) {     
-      Book.findById(req.params.id)
-        .populate('author')
-        .populate('genre')
-        .exec(callback);
-    },
-    book_instance: function(callback) {
-      BookInstance.find({ 'book': req.params.id })
-        //.populate('book')
-        .exec(callback);
-    },
-  }, function(err, results) {
-    if (err) { return next(err); }
-    //Successful, so render
-    res.render('book_detail', { title: 'Title', book: results.book, book_instances: results.book_instance } );
-  });*/
-  res.render('pset', data.psets[req.params.id]);
-  //res.send("Not implement yet")
+exports.pset_detail = function (req, res, next) {
+    async.parallel({
+        pset: function (callback) {
+            Pset.findById(req.params.id)
+                .exec(callback);
+        }
+    }, function (err, results) {
+        if (err) { return next(err); }
+        //Successful, so render
+        res.render('psetdetail', { code: results.pset.code, head: results.pset.head, items: results.pset.items, tail: results.pset.tail })
+    });
 };
 
 // Display book create form on GET
-exports.pset_create_get = function(req, res, next) {
+exports.pset_create_get = function (req, res, next) {
     //Get all authors and genres, which we can use for adding to our book.
     /*async.parallel({
         authors: function(callback) {
@@ -105,93 +94,76 @@ exports.pset_create_get = function(req, res, next) {
         if (err) { return next(err); }
         res.render('book_form', { title: 'Create Book', authors: results.authors, genres: results.genres });
     });*/
-    res.send("pset_create_get Not implement yet")
-
+    //res.send("pset_create_get Not implement yet")
+    console.log(req.body)
+    res.render('psetcreate')
 };
 
 // Handle book create on POST
-exports.pset_create_post = function(req, res, next) {
-    /*req.checkBody('title', 'Title must not be empty.').notEmpty();
-    req.checkBody('author', 'Author must not be empty').notEmpty();
-    req.checkBody('summary', 'Summary must not be empty').notEmpty();
-    req.checkBody('isbn', 'ISBN must not be empty').notEmpty();
-    
-    //req.sanitize('title').escape();
-    req.sanitize('title');
-    req.sanitize('author').escape();
-    req.sanitize('summary').escape();
-    req.sanitize('isbn').escape();
-    req.sanitize('title').trim();     
-    req.sanitize('author').trim();
-    req.sanitize('summary').trim();
-    req.sanitize('isbn').trim();
-    req.sanitize('genre').escape();
-    
-    var book = new Book({
-        title: req.body.title, 
-        author: req.body.author, 
-        summary: req.body.summary,
-        isbn: req.body.isbn,
-        genre: (typeof req.body.genre==='undefined') ? [] : req.body.genre.split(",")
+exports.pset_create_post = function (req, res, next) {
+    var data = req.body
+    console.log("data=", data)
+    var mypset = JSON.parse(data.pset)
+    var pset = new Pset({
+        code: mypset.code,
+        items: mypset.items,
+        head: mypset.head,
+        tail: mypset.tail
     });
-       
-    console.log('BOOK: ' + book);
-    
+
+    console.log('pset: ' + pset);
+
     var errors = req.validationErrors();
     if (errors) {
-        // Some problems so we need to re-render our book
-
-        //Get all authors and genres for form
-        async.parallel({
-            authors: function(callback) {
-                Author.find(callback);
-            },
-            genres: function(callback) {
-                Genre.find(callback);
-            },
-        }, function(err, results) {
-            if (err) { return next(err); }
-            
-            // Mark our selected genres as checked
-            for (i = 0; i < results.genres.length; i++) {
-                if (book.genre.indexOf(results.genres[i]._id) > -1) {
-                    //Current genre is selected. Set "checked" flag.
-                    results.genres[i].checked='true';
-                }
-            }
-            res.render('book_form', { title: 'Create Book',authors:results.authors, genres:results.genres, book: book, errors: errors });
-        });
-
-    } 
+        console.log("errors:", errors)
+        res.render('psetcreate')
+    }
     else {
-    // Data from form is valid.
-    // We could check if book exists already, but lets just save.
-    
-        book.save(function (err) {
-            if (err) { return next(err); }
+        // Data from form is valid.
+        // We could check if book exists already, but lets just save.
+        Pset.findOne({ 'code': mypset.code })
+            .exec(function (err, found_code) {
+                 if (err) { return next(err); }
+
+                if (found_code) {
+                    //code exists, redirect to its detail page
+                    console.log('found_code: ' + found_code);
+                    res.redirect(found_code.url);
+                }
+                else {
+
+                    pset.save(function (err) {
+                        if (err) { return next(err); }
             //successful - redirect to new book record.
-            res.redirect(book.url);
-        });
-    }*/
-    res.send("Not implement yet")
+                        console.log("pset.url",pset.url)
+                        res.redirect(pset.url);
+                    });
+                }
+            })
+    }
+    //console.log(req.body)
+
+    //var pset=JSON.parse(req.body.pset)
+    //res.render('psetcreate',{pset:pset})
+    //res.send("create get Not implement yet")
 };
 
 // Display book delete form on GET
-exports.pset_delete_get = function(req, res, next) {
+exports.pset_delete_get = function (req, res, next) {
     res.send('NOT IMPLEMENTED: Book delete GET');
 };
 
 // Handle book delete on POST
-exports.pset_delete_post = function(req, res, next) {
+exports.pset_delete_post = function (req, res, next) {
     res.send('NOT IMPLEMENTED: Book delete POST');
 };
 
 // Display book update form on GET
-exports.pset_update_get = function(req, res, next) {
+exports.pset_update_get = function (req, res, next) {
     res.send('NOT IMPLEMENTED: Book update GET');
 };
 
 // Handle book update on POST
-exports.pset_update_post = function(req, res, next) {
+exports.pset_update_post = function (req, res, next) {
     res.send('NOT IMPLEMENTED: Book update POST');
 };

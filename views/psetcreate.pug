@@ -1,0 +1,46 @@
+extends layout
+
+block content
+  script().
+    function allowDrop(ev) {
+      ev.preventDefault();
+    }
+    // https://github.com/aadsm/jschardet
+    function drop(ev) {
+      ev.preventDefault();
+      var file = ev.dataTransfer.files[0];
+      var reader = new FileReader()
+      reader.onloadend=(ev)=>{
+          //console.log(jschardet.detect(ev.target.result).encoding)
+          //var encoding=jschardet.detect(ev.target.result).encoding
+          //reader.readAsText(file)
+          //reader.onloadend=(event)=>{
+            document.getElementById("pset").value=event.target.result
+            console.log(JSON.parse(event.target.result))
+          //}
+      }
+      reader.readAsText(file)
+    }
+    function handleset(ev){
+      //ev.preventDefault();
+      var count=document.getElementById("infile").files.length
+      console.log("count ="+count)
+      if (count===0)
+        return
+      var reader=new FileReader()
+      var file = document.getElementById("infile").files[0];
+      reader.onloadend = (ev)=>{
+        document.getElementById("pset").value=reader.result
+      }
+      reader.readAsText(file)
+    }
+  
+  form(method="POST")
+    input(type="file" name="infile" id="infile"  onchange="handleset(event)")
+    textarea(name="pset" id="pset" cols="60" rows="15" ondrop="drop(event)" ondragover="allowDrop(event)") !{JSON.stringify(pset,null,2)}
+    input(type="submit" value="submit")
+  if pset
+    - var head=pset.head
+    - var tail=pset.tail
+    - var items=pset.items
+    include ./pset.pug

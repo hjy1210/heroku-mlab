@@ -3,6 +3,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var PsetSchema = Schema({
+  code:{type:String,required:true},
   head: {type: String},
   tail:{type:String},
   items: [{

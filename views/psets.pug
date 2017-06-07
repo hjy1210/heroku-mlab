@@ -1,8 +1,10 @@
 extends layout
 
 block content
-  each pset,psetindex in psets
-    - var head=pset.head
-    - var tail=pset.tail
-    - var items=pset.items
-    include ./pset.pug
+  if psets
+    ul
+      each pset in psets
+        li 
+          a(href=pset.url) #{pset.code} 
+  else
+    li There are no books.
