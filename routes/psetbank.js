@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+var multer  = require('multer')
+var upload=multer() //multer({ dest: 'uploads/' }) for save file in uploads directory
 
 // Require controller modules
 var pset_controller = require('../controllers/psetController');
@@ -12,7 +14,7 @@ router.get('/', pset_controller.index);
 router.get('/pset/create', pset_controller.pset_create_get);
 
 /* POST request for creating pset. */
-router.post('/pset/create', pset_controller.pset_create_post);
+router.post('/pset/create', upload.array('media', 12),pset_controller.pset_create_post);
 
 /* GET request to delete pset. */
 router.get('/pset/:id/delete', pset_controller.pset_delete_get);
@@ -28,6 +30,9 @@ router.post('/pset/:id/update', pset_controller.pset_update_post);
 
 /* GET request for one pset. */
 router.get('/pset/:id', pset_controller.pset_detail);
+
+/* Get image in one pset */
+router.get('/pset/:id/:medianame', pset_controller.pset_detail_image);
 
 /* GET request for list of all pset items. */
 router.get('/psets', pset_controller.pset_list);

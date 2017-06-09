@@ -8,3 +8,12 @@ block content
       include ./item.pug
   if tail
     p !{tail}
+  script().
+    /*(function(){
+      var imgs=document.getElementsByTagName('img')
+      console.log(id)
+      for (img in imgs){
+        console.log(img.src)
+        img.src=""+id+"/"+img.src
+      }
+    })()*/

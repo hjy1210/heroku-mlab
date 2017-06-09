@@ -96,4 +96,11 @@ This open the website.
 ## MathJax
 **For math formula, IE is much slower than chrome.**
 
+## Progress
+* create pset
+* display psets as list
+* display pset detail
+* save image as Buffer in mongoDB
+* 2017/06/09 Add feature: can add image with `<img src='carbonemission.png'>`
+
 

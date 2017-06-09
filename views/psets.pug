@@ -5,6 +5,9 @@ block content
     ul
       each pset in psets
         li 
-          a(href=pset.url) #{pset.code} 
+          a(href=pset.url) #{pset.code}
+          if pset.media && pset.media.length>0
+            each item in pset.media
+              span (#{item.filename})
   else
     li There are no books.

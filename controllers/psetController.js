@@ -45,7 +45,9 @@ var async = require('async');
       }]
     }]
   }*/
-
+function changesrc(str,id){
+    return str.replace(/<img src='/gi, function myFunction(x){return "<img src='"+id+"/"})
+}
 exports.index = function (req, res) {
 
     async.parallel({
@@ -68,6 +70,7 @@ exports.pset_list = function (req, res, next) {
 
 // Display detail page for a specific book
 exports.pset_detail = function (req, res, next) {
+    var id=req.params.id
     async.parallel({
         pset: function (callback) {
             Pset.findById(req.params.id)
@@ -76,9 +79,55 @@ exports.pset_detail = function (req, res, next) {
     }, function (err, results) {
         if (err) { return next(err); }
         //Successful, so render
-        res.render('psetdetail', { code: results.pset.code, head: results.pset.head, items: results.pset.items, tail: results.pset.tail })
+        console.log("_id=",results.pset._id)
+        var id=""+results.pset._id
+        console.log("req.url:",req.url,id,":",id)
+        if (results.pset.head)
+            results.pset.head=changesrc(results.pset.head,id)
+        if (results.pset.tail)
+            results.pset.tail=changesrc(results.pset.tail,id)
+        if (results.pset.items && results.pset.items.length>0){
+            for (var i=0;i<results.pset.items.length;i++){
+                if (results.pset.items[i].head)
+                    results.pset.items[i].head=changesrc(results.pset.items[i].head,id)
+                if (results.pset.items[i].tail)
+                    results.pset.items[i].tail=changesrc(results.pset.items[i].tail,id)
+                if (results.pset.items[i].choices && results.pset.items[i].choices.length>0) {
+                    for (var j=0;j<results.pset.items[i].choices.length;j++){
+                        results.pset.items[i].choices[j]=changesrc(results.pset.items[i].choices[j],id)
+                    }
+                }  
+            }
+        }
+        res.render('psetdetail', { code: results.pset.code, head: results.pset.head, items: results.pset.items, tail: results.pset.tail, id:id})
     });
 };
+
+exports.pset_detail_image = function  (req, res, next) {
+    console.log(req.params.id,req.params.medianame)
+    async.parallel({
+        pset: function (callback) {
+            Pset.findById(req.params.id)
+                .exec(callback);
+        }
+    }, function (err, results) {
+        if (err) { return next(err); }
+        var imgindex
+        console.log("results:",results)
+        for (var i=0;i<results.pset.media.length;i++){
+            console.log(results.pset.media[i].filename)
+            if (results.pset.media[i].filename===req.params.medianame)
+                imgindex=i
+                break
+        }
+        console.log(imgindex)
+        res.contentType(results.pset.media[imgindex].mimetype);
+        res.send(results.pset.media[imgindex].content);
+
+        //Successful, so render
+    });
+    
+}
 
 // Display book create form on GET
 exports.pset_create_get = function (req, res, next) {
@@ -102,16 +151,24 @@ exports.pset_create_get = function (req, res, next) {
 // Handle book create on POST
 exports.pset_create_post = function (req, res, next) {
     var data = req.body
-    console.log("data=", data)
+    /////console.log("data=", data)
     var mypset = JSON.parse(data.pset)
+    var media=[]
+    for (var i=0;i<req.files.length;i++){
+        var file=req.files[i]
+        /////console.log(file.originalname,file.mimetype,file.size,file.buffer.length)
+        media.push({filename:file.originalname,mimetype:file.mimetype,content:file.buffer})
+    }
     var pset = new Pset({
         code: mypset.code,
         items: mypset.items,
         head: mypset.head,
-        tail: mypset.tail
+        tail: mypset.tail,
+        media:media
     });
 
-    console.log('pset: ' + pset);
+    /////console.log('pset: ' + pset);
+    /////console.log("files",req.files)
 
     var errors = req.validationErrors();
     if (errors) {
@@ -127,22 +184,20 @@ exports.pset_create_post = function (req, res, next) {
 
                 if (found_code) {
                     //code exists, redirect to its detail page
-                    console.log('found_code: ' + found_code);
+                    /////console.log('found_code: ' + found_code);
                     res.redirect(found_code.url);
                 }
                 else {
 
                     pset.save(function (err) {
                         if (err) { return next(err); }
-            //successful - redirect to new book record.
-                        console.log("pset.url",pset.url)
+                        //successful - redirect to new book record.
+                        /////console.log("pset.url",pset.url)
                         res.redirect(pset.url);
                     });
                 }
             })
     }
-    //console.log(req.body)
-
     //var pset=JSON.parse(req.body.pset)
     //res.render('psetcreate',{pset:pset})
     //res.send("create get Not implement yet")

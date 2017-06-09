@@ -35,8 +35,10 @@ block content
       reader.readAsText(file)
     }
   
-  form(method="POST")
-    input(type="file" name="infile" id="infile"  onchange="handleset(event)")
+  input(type="file" name="infile" id="infile"  onchange="handleset(event)")
+
+  form(method="post" enctype="multipart/form-data")
+    input(type="file" name="media" id="media" multiple)
     textarea(name="pset" id="pset" cols="60" rows="15" ondrop="drop(event)" ondragover="allowDrop(event)") !{JSON.stringify(pset,null,2)}
     input(type="submit" value="submit")
   if pset

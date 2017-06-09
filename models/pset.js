@@ -10,6 +10,11 @@ var PsetSchema = Schema({
     head: {type: String},
     tail:{type:String},
     choices: [{type: String,required: true}]
+  }],
+  media:[{
+    filename:{type:String, required:true},
+    mimetype:{type:String},
+    content:{type:Buffer, required:true}
   }]
 });
 
