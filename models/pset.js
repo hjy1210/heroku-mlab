@@ -9,7 +9,8 @@ var PsetSchema = Schema({
   items: [{
     head: {type: String},
     tail:{type:String},
-    choices: [{type: String,required: true}]
+    choices: [{type: String,required: true}],
+    spaces:{ type: Number, min: 0, max: 10 }
   }],
   media:[{
     filename:{type:String, required:true},

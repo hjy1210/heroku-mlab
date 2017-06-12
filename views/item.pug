@@ -3,8 +3,14 @@ if item.head
 table
   each obj,index in item.choices
     tr
-      td(valign="top") #[input(type='radio' name=itemindex value=index)]
+      td(valign="top") 
+        if !item.single
+          input(type='radio' name=itemindex value=index)
+        else
+          input(type='checkbox' name=itemindex value=index)
       td(align="left") !{obj}
+if item.spaces && item.spaces>0
+  include spaces
 if item.tail
   p !{item.tail}
 br

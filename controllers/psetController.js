@@ -46,7 +46,9 @@ var async = require('async');
     }]
   }*/
 function changesrc(str,id){
-    return str.replace(/<img src='/gi, function myFunction(x){return "<img src='"+id+"/"})
+    var s=str.replace(/<img src='/gi, function imgFunction(x){return "<img src='"+id+"/"})
+    s=s.replace(/<audio src='/gi, function audioFunction(x){return "<audio src='"+id+"/"})
+    return s
 }
 exports.index = function (req, res) {
 
@@ -116,9 +118,10 @@ exports.pset_detail_image = function  (req, res, next) {
         console.log("results:",results)
         for (var i=0;i<results.pset.media.length;i++){
             console.log(results.pset.media[i].filename)
-            if (results.pset.media[i].filename===req.params.medianame)
+            if (results.pset.media[i].filename===req.params.medianame){
                 imgindex=i
                 break
+            }
         }
         console.log(imgindex)
         res.contentType(results.pset.media[imgindex].mimetype);
@@ -154,9 +157,10 @@ exports.pset_create_post = function (req, res, next) {
     /////console.log("data=", data)
     var mypset = JSON.parse(data.pset)
     var media=[]
+    console.log("files.count",req.files.length)
     for (var i=0;i<req.files.length;i++){
         var file=req.files[i]
-        /////console.log(file.originalname,file.mimetype,file.size,file.buffer.length)
+        console.log("files:",file.originalname,file.mimetype,file.size,file.buffer.length)
         media.push({filename:file.originalname,mimetype:file.mimetype,content:file.buffer})
     }
     var pset = new Pset({
