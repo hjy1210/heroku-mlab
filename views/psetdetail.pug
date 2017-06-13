@@ -8,6 +8,8 @@ block content
       include ./item.pug
   if tail
     p !{tail}
+  if spacecount && spacecount>0
+    include ./spaces.pug
   script().
     /*(function(){
       var imgs=document.getElementsByTagName('img')

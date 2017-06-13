@@ -45,9 +45,9 @@ var async = require('async');
       }]
     }]
   }*/
-function changesrc(str,id){
-    var s=str.replace(/<img src='/gi, function imgFunction(x){return "<img src='"+id+"/"})
-    s=s.replace(/<audio src='/gi, function audioFunction(x){return "<audio src='"+id+"/"})
+function changesrc(str, id) {
+    var s = str.replace(/<img src='/gi, function imgFunction(x) { return "<img src='" + id + "/" })
+    s = s.replace(/<audio src='/gi, function audioFunction(x) { return "<audio src='" + id + "/" })
     return s
 }
 exports.index = function (req, res) {
@@ -63,16 +63,16 @@ exports.index = function (req, res) {
 // Display list of all books
 exports.pset_list = function (req, res, next) {
     Pset.find({})
-      .exec(function (err, list_psets) {
-        if (err) { return next(err); }
-        //Successful, so render
-        res.render('psets', { psets: list_psets });
-      });
+        .exec(function (err, list_psets) {
+            if (err) { return next(err); }
+            //Successful, so render
+            res.render('psets', { psets: list_psets });
+        });
 };
 
 // Display detail page for a specific book
 exports.pset_detail = function (req, res, next) {
-    var id=req.params.id
+    var id = req.params.id
     async.parallel({
         pset: function (callback) {
             Pset.findById(req.params.id)
@@ -81,32 +81,58 @@ exports.pset_detail = function (req, res, next) {
     }, function (err, results) {
         if (err) { return next(err); }
         //Successful, so render
-        console.log("_id=",results.pset._id)
-        var id=""+results.pset._id
-        console.log("req.url:",req.url,id,":",id)
+        console.log("_id=", results.pset._id)
+        var id = "" + results.pset._id
+        console.log("req.url:", req.url, id, ":", id)
         if (results.pset.head)
-            results.pset.head=changesrc(results.pset.head,id)
+            results.pset.head = changesrc(results.pset.head, id)
         if (results.pset.tail)
-            results.pset.tail=changesrc(results.pset.tail,id)
-        if (results.pset.items && results.pset.items.length>0){
-            for (var i=0;i<results.pset.items.length;i++){
+            results.pset.tail = changesrc(results.pset.tail, id)
+        if (results.pset.items && results.pset.items.length > 0) {
+            for (var i = 0; i < results.pset.items.length; i++) {
                 if (results.pset.items[i].head)
-                    results.pset.items[i].head=changesrc(results.pset.items[i].head,id)
+                    results.pset.items[i].head = changesrc(results.pset.items[i].head, id)
                 if (results.pset.items[i].tail)
-                    results.pset.items[i].tail=changesrc(results.pset.items[i].tail,id)
-                if (results.pset.items[i].choices && results.pset.items[i].choices.length>0) {
-                    for (var j=0;j<results.pset.items[i].choices.length;j++){
-                        results.pset.items[i].choices[j]=changesrc(results.pset.items[i].choices[j],id)
+                    results.pset.items[i].tail = changesrc(results.pset.items[i].tail, id)
+                if (results.pset.items[i].choices && results.pset.items[i].choices.length > 0) {
+                    for (var j = 0; j < results.pset.items[i].choices.length; j++) {
+                        results.pset.items[i].choices[j] = changesrc(results.pset.items[i].choices[j], id)
                     }
-                }  
+                }
             }
         }
-        res.render('psetdetail', { code: results.pset.code, head: results.pset.head, items: results.pset.items, tail: results.pset.tail, id:id})
+        var espacecount
+        var labels
+        var errmsg
+        var leadings
+        var labels
+        if (results.pset.espaces) {
+            var tokens = results.pset.espaces.split(" ")
+            if (tokens.length != 2) {
+                errmsg = "token length error"
+            } else {
+                espacecount = parseInt(tokens[0])
+                if (isNaN(espacecount) || espacecount < 1 || espacecount > tokens[1].length) {
+                    errmsg = "format example: 10 ABCDEFGHIJKL"
+                }
+            }
+            if (errmsg) {
+                var err1 = new Error(errmsg);
+                err1.status = 500;
+                return next(err1);
+            }
+            leadings = []
+            for (var i = 0; i < espacecount; i++) {
+                leadings.push("(" + (i + 1) + ")=")
+            }
+            labels=tokens[1]
+        }
+        res.render('psetdetail', { code: results.pset.code, head: results.pset.head, items: results.pset.items, tail: results.pset.tail, leadings: leadings, spacecount: espacecount, labels: labels })
     });
 };
 
-exports.pset_detail_image = function  (req, res, next) {
-    console.log(req.params.id,req.params.medianame)
+exports.pset_detail_image = function (req, res, next) {
+    console.log(req.params.id, req.params.medianame)
     async.parallel({
         pset: function (callback) {
             Pset.findById(req.params.id)
@@ -115,21 +141,27 @@ exports.pset_detail_image = function  (req, res, next) {
     }, function (err, results) {
         if (err) { return next(err); }
         var imgindex
-        console.log("results:",results)
-        for (var i=0;i<results.pset.media.length;i++){
+        console.log("results:", results)
+        for (var i = 0; i < results.pset.media.length; i++) {
             console.log(results.pset.media[i].filename)
-            if (results.pset.media[i].filename===req.params.medianame){
-                imgindex=i
+            if (results.pset.media[i].filename === req.params.medianame) {
+                imgindex = i
                 break
             }
         }
         console.log(imgindex)
-        res.contentType(results.pset.media[imgindex].mimetype);
-        res.send(results.pset.media[imgindex].content);
+        if (imgindex >= 0) {
+            res.contentType(results.pset.media[imgindex].mimetype);
+            res.send(results.pset.media[imgindex].content);
+        } else {
+            var err = new Error('media not Found');
+            err.status = 404;
+            next(err);
+        }
 
         //Successful, so render
     });
-    
+
 }
 
 // Display book create form on GET
@@ -156,19 +188,20 @@ exports.pset_create_post = function (req, res, next) {
     var data = req.body
     /////console.log("data=", data)
     var mypset = JSON.parse(data.pset)
-    var media=[]
-    console.log("files.count",req.files.length)
-    for (var i=0;i<req.files.length;i++){
-        var file=req.files[i]
-        console.log("files:",file.originalname,file.mimetype,file.size,file.buffer.length)
-        media.push({filename:file.originalname,mimetype:file.mimetype,content:file.buffer})
+    var media = []
+    console.log("files.count", req.files.length)
+    for (var i = 0; i < req.files.length; i++) {
+        var file = req.files[i]
+        console.log("files:", file.originalname, file.mimetype, file.size, file.buffer.length)
+        media.push({ filename: file.originalname, mimetype: file.mimetype, content: file.buffer })
     }
     var pset = new Pset({
         code: mypset.code,
         items: mypset.items,
         head: mypset.head,
         tail: mypset.tail,
-        media:media
+        media: media,
+        espaces: mypset.espaces
     });
 
     /////console.log('pset: ' + pset);
@@ -184,7 +217,7 @@ exports.pset_create_post = function (req, res, next) {
         // We could check if book exists already, but lets just save.
         Pset.findOne({ 'code': mypset.code })
             .exec(function (err, found_code) {
-                 if (err) { return next(err); }
+                if (err) { return next(err); }
 
                 if (found_code) {
                     //code exists, redirect to its detail page

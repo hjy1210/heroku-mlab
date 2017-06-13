@@ -16,7 +16,8 @@ var PsetSchema = Schema({
     filename:{type:String, required:true},
     mimetype:{type:String},
     content:{type:Buffer, required:true}
-  }]
+  }],
+  espaces:{type:String}
 });
 
 // Virtual for book's URL

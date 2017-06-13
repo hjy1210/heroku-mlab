@@ -104,7 +104,8 @@ This open the website.
 * 2017/06/09 Add feature: can add image with `<img src='carbonemission.png'>`
 * 2017/06/12 Add feature `<audio src='example1/mp3' controls>`
 * 2017/06/12 Add feature `item.spaces` for spacefill item in mathematics.
-* Todo: add `pset.espaces` for item in english item.
+* 2017/06/13 Note: JSON file can not have '\t' character
+* 2017/06/13 Add feature `pset.espaces` for item in english item. Fix server crash bug.
 * Todo: check as detail as possible can avoid server crash for example: file upload and json content not in consistent.
 
 
