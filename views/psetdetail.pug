@@ -1,6 +1,7 @@
-extends layout
+extends psetindex
 
 block content
+  h2 #{code}
   if head
     p !{head}
   if items && items.length>0
@@ -10,12 +11,4 @@ block content
     p !{tail}
   if spacecount && spacecount>0
     include ./spaces.pug
-  script().
-    /*(function(){
-      var imgs=document.getElementsByTagName('img')
-      console.log(id)
-      for (img in imgs){
-        console.log(img.src)
-        img.src=""+id+"/"+img.src
-      }
-    })()*/
+  hr

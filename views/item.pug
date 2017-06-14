@@ -10,7 +10,9 @@ table
           input(type='checkbox' name=itemindex value=index)
       td(align="left") !{obj}
 if item.spaces && item.spaces>0
-  include mspaces
+  -var leadings=item.leadings
+  -var labels=item.labels
+  include spaces
 if item.tail
   p !{item.tail}
 br

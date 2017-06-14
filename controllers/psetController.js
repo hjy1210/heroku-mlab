@@ -1,6 +1,7 @@
 var Pset = require('../models/pset');
 
 var async = require('async');
+var psets
 
 /*var data={
     psets:[{
@@ -52,13 +53,21 @@ function changesrc(str, id) {
 }
 exports.index = function (req, res) {
 
-    async.parallel({
-        pset_count: function (callback) {
-            Pset.count(callback);
-        }
-    }, function (err, results) {
-        res.render('psetindex', { title: 'Local Psets Home', error: err, data: results });
-    });
+    //async.parallel({
+    //    pset_count: function (callback) {
+    //        Pset.count(callback);
+    //    }
+    //}, function (err, results) {
+    //    res.render('psetindex', { title: 'Local Psets Home', error: err, data: results });
+    //});
+    Pset.find({})
+        .exec(function (err, list_psets) {
+            if (err) { return next(err); }
+            psets=list_psets
+            //Successful, so render
+            res.render('psetindex', { psets: psets });
+        });
+
 };
 // Display list of all books
 exports.pset_list = function (req, res, next) {
@@ -99,6 +108,14 @@ exports.pset_detail = function (req, res, next) {
                         results.pset.items[i].choices[j] = changesrc(results.pset.items[i].choices[j], id)
                     }
                 }
+                if (results.pset.items[i].spaces && results.pset.items[i].spaces>0) {
+                    results.pset.items[i].labels=" 1234567890–±"
+                    results.pset.items[i].leadings = []
+                    for (var j = 0; j < results.pset.items[i].spaces; j++) {
+                        //leadings.push("\\(\\fbox{" + (i + 1) + "}\\)=")
+                        results.pset.items[i].leadings.push("\\(\\ceec{" + (j + 1) + "}\\)=")
+                    }
+                }
             }
         }
         var espacecount
@@ -123,11 +140,12 @@ exports.pset_detail = function (req, res, next) {
             }
             leadings = []
             for (var i = 0; i < espacecount; i++) {
-                leadings.push("(" + (i + 1) + ")=")
+                //leadings.push("\\(\\fbox{" + (i + 1) + "}\\)=")
+                leadings.push("\\(\\ceec{" + (i + 1) + "}\\)=")
             }
-            labels=tokens[1]
+            labels=" "+tokens[1]
         }
-        res.render('psetdetail', { code: results.pset.code, head: results.pset.head, items: results.pset.items, tail: results.pset.tail, leadings: leadings, spacecount: espacecount, labels: labels })
+        res.render('psetdetail', { code: results.pset.code, head: results.pset.head, items: results.pset.items, tail: results.pset.tail, leadings: leadings, spacecount: espacecount, labels: labels,psets:psets })
     });
 };
 
@@ -180,7 +198,7 @@ exports.pset_create_get = function (req, res, next) {
     });*/
     //res.send("pset_create_get Not implement yet")
     console.log(req.body)
-    res.render('psetcreate')
+    res.render('psetcreate',{psets:psets})
 };
 
 // Handle book create on POST
@@ -230,7 +248,8 @@ exports.pset_create_post = function (req, res, next) {
                         if (err) { return next(err); }
                         //successful - redirect to new book record.
                         /////console.log("pset.url",pset.url)
-                        res.redirect(pset.url);
+                        //res.redirect(pset.url);
+                        res.redirect('/psetbank')
                     });
                 }
             })
