@@ -71,11 +71,12 @@ exports.index = function (req, res) {
 };
 // Display list of all books
 exports.pset_list = function (req, res, next) {
-    Pset.find({})
+    Pset.find({},"code url mediacount")
         .exec(function (err, list_psets) {
             if (err) { return next(err); }
             //Successful, so render
-            res.render('psets', { psets: list_psets });
+            psets=list_psets
+            res.render('psetindex', { psets: psets });
         });
 };
 

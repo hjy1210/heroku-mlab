@@ -26,6 +26,15 @@ PsetSchema
 .get(function () {
   return '/psetbank/pset/' + this._id;
 });
+PsetSchema
+.virtual('mediacount')
+.get(function () {
+  if (this.media){
+    return this.media.length
+  } else {
+    return 0
+  }
+});
 
 //Export model
 module.exports = mongoose.model('Pset', PsetSchema);
