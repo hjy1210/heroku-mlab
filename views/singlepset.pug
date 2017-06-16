@@ -1,0 +1,11 @@
+h2 #{code}
+if head
+  p !{head}
+if items && items.length>0
+  each item,itemindex in items
+    include ./item.pug
+if tail
+  p !{tail}
+if spacecount && spacecount>0
+  include ./spaces.pug
+hr

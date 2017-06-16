@@ -63,7 +63,7 @@ exports.index = function (req, res) {
     Pset.find({})
         .exec(function (err, list_psets) {
             if (err) { return next(err); }
-            psets=list_psets
+            psets = list_psets
             //Successful, so render
             res.render('psetindex', { psets: psets });
         });
@@ -71,15 +71,82 @@ exports.index = function (req, res) {
 };
 // Display list of all books
 exports.pset_list = function (req, res, next) {
-    Pset.find({},"code url mediacount")
+    Pset.find({})
         .exec(function (err, list_psets) {
             if (err) { return next(err); }
             //Successful, so render
-            psets=list_psets
-            res.render('psetindex', { psets: psets });
+            psets = list_psets
+            for (var i=0;i<list_psets.length;i++) {
+                arrangeData(psets[i],"pset/")
+            }
+            res.render('psets', { psets: psets });
         });
 };
 
+function arrangeData(pset,dir="") {
+    console.log("_id=", pset._id)
+    var id = "" + pset._id
+    if (dir) {
+        id=dir+id
+    }
+    if (pset.head)
+        pset.head = changesrc(pset.head, id)
+    if (pset.tail)
+        pset.tail = changesrc(pset.tail, id)
+    if (pset.items && pset.items.length > 0) {
+        for (var i = 0; i < pset.items.length; i++) {
+            if (pset.items[i].head)
+                pset.items[i].head = changesrc(pset.items[i].head, id)
+            if (pset.items[i].tail)
+                pset.items[i].tail = changesrc(pset.items[i].tail, id)
+            if (pset.items[i].choices && pset.items[i].choices.length > 0) {
+                for (var j = 0; j < pset.items[i].choices.length; j++) {
+                    pset.items[i].choices[j] = changesrc(pset.items[i].choices[j], id)
+                }
+            }
+            if (pset.items[i].spaces && pset.items[i].spaces > 0) {
+                pset.items[i].labels = " 1234567890–±"
+                pset.items[i].leadings = []
+                for (var j = 0; j < pset.items[i].spaces; j++) {
+                    //leadings.push("\\(\\fbox{" + (i + 1) + "}\\)=")
+                    pset.items[i].leadings.push("\\(\\ceec{" + (j + 1) + "}\\)=")
+                }
+            }
+        }
+    }
+    var espacecount
+    var labels
+    var errmsg
+    var leadings
+    var labels
+    if (pset.espaces) {
+        var tokens = pset.espaces.split(" ")
+        if (tokens.length != 2) {
+            errmsg = "token length error"
+        } else {
+            espacecount = parseInt(tokens[0])
+            if (isNaN(espacecount) || espacecount < 1 || espacecount > tokens[1].length) {
+                errmsg = "format example: 10 ABCDEFGHIJKL"
+            }
+        }
+        if (errmsg) {
+            //var err1 = new Error(errmsg);
+            //err1.status = 500;
+            //return next(err1);
+            return errmsg
+        }
+        leadings = []
+        for (var i = 0; i < espacecount; i++) {
+            //leadings.push("\\(\\fbox{" + (i + 1) + "}\\)=")
+            leadings.push("\\(\\ceec{" + (i + 1) + "}\\)=")
+        }
+        pset.leadings=leadings
+        labels = " " + tokens[1]
+        pset.labels=labels
+        pset.espacecount=espacecount
+        return null
+    }
+}
 // Display detail page for a specific book
 exports.pset_detail = function (req, res, next) {
     var id = req.params.id
@@ -91,62 +158,68 @@ exports.pset_detail = function (req, res, next) {
     }, function (err, results) {
         if (err) { return next(err); }
         //Successful, so render
-        console.log("_id=", results.pset._id)
-        var id = "" + results.pset._id
-        console.log("req.url:", req.url, id, ":", id)
-        if (results.pset.head)
-            results.pset.head = changesrc(results.pset.head, id)
-        if (results.pset.tail)
-            results.pset.tail = changesrc(results.pset.tail, id)
-        if (results.pset.items && results.pset.items.length > 0) {
-            for (var i = 0; i < results.pset.items.length; i++) {
-                if (results.pset.items[i].head)
-                    results.pset.items[i].head = changesrc(results.pset.items[i].head, id)
-                if (results.pset.items[i].tail)
-                    results.pset.items[i].tail = changesrc(results.pset.items[i].tail, id)
-                if (results.pset.items[i].choices && results.pset.items[i].choices.length > 0) {
-                    for (var j = 0; j < results.pset.items[i].choices.length; j++) {
-                        results.pset.items[i].choices[j] = changesrc(results.pset.items[i].choices[j], id)
-                    }
-                }
-                if (results.pset.items[i].spaces && results.pset.items[i].spaces>0) {
-                    results.pset.items[i].labels=" 1234567890–±"
-                    results.pset.items[i].leadings = []
-                    for (var j = 0; j < results.pset.items[i].spaces; j++) {
-                        //leadings.push("\\(\\fbox{" + (i + 1) + "}\\)=")
-                        results.pset.items[i].leadings.push("\\(\\ceec{" + (j + 1) + "}\\)=")
-                    }
-                }
-            }
+        //console.log("_id=", results.pset._id)
+        //var id = "" + results.pset._id
+        //console.log("req.url:", req.url, id, ":", id)
+        //if (results.pset.head)
+        //    results.pset.head = changesrc(results.pset.head, id)
+        //if (results.pset.tail)
+        //    results.pset.tail = changesrc(results.pset.tail, id)
+        //if (results.pset.items && results.pset.items.length > 0) {
+        //    for (var i = 0; i < results.pset.items.length; i++) {
+        //        if (results.pset.items[i].head)
+        //            results.pset.items[i].head = changesrc(results.pset.items[i].head, id)
+        //        if (results.pset.items[i].tail)
+        //            results.pset.items[i].tail = changesrc(results.pset.items[i].tail, id)
+        //        if (results.pset.items[i].choices && results.pset.items[i].choices.length > 0) {
+        //            for (var j = 0; j < results.pset.items[i].choices.length; j++) {
+        //                results.pset.items[i].choices[j] = changesrc(results.pset.items[i].choices[j], id)
+        //            }
+        //        }
+        //        if (results.pset.items[i].spaces && results.pset.items[i].spaces > 0) {
+        //            results.pset.items[i].labels = " 1234567890–±"
+        //            results.pset.items[i].leadings = []
+        //            for (var j = 0; j < results.pset.items[i].spaces; j++) {
+        //                //leadings.push("\\(\\fbox{" + (i + 1) + "}\\)=")
+        //                results.pset.items[i].leadings.push("\\(\\ceec{" + (j + 1) + "}\\)=")
+        //            }
+        //        }
+        //    }
+        //}
+        //var espacecount
+        //var labels
+        //var errmsg
+        //var leadings
+        //var labels
+        //if (results.pset.espaces) {
+        //    var tokens = results.pset.espaces.split(" ")
+        //    if (tokens.length != 2) {
+        //        errmsg = "token length error"
+        //    } else {
+        //        espacecount = parseInt(tokens[0])
+        //        if (isNaN(espacecount) || espacecount < 1 || espacecount > tokens[1].length) {
+        //            errmsg = "format example: 10 ABCDEFGHIJKL"
+        //        }
+        //    }
+        //    if (errmsg) {
+        //        var err1 = new Error(errmsg);
+        //        err1.status = 500;
+        //        return next(err1);
+        //    }
+        //    leadings = []
+        //    for (var i = 0; i < espacecount; i++) {
+        //        //leadings.push("\\(\\fbox{" + (i + 1) + "}\\)=")
+        //        leadings.push("\\(\\ceec{" + (i + 1) + "}\\)=")
+        //    }
+        //    labels = " " + tokens[1]
+        //}
+        var errmsg=arrangeData(results.pset)
+        if (errmsg){
+            var err1 = new Error(errmsg);
+            err1.status = 500;
+            return next(err1);
         }
-        var espacecount
-        var labels
-        var errmsg
-        var leadings
-        var labels
-        if (results.pset.espaces) {
-            var tokens = results.pset.espaces.split(" ")
-            if (tokens.length != 2) {
-                errmsg = "token length error"
-            } else {
-                espacecount = parseInt(tokens[0])
-                if (isNaN(espacecount) || espacecount < 1 || espacecount > tokens[1].length) {
-                    errmsg = "format example: 10 ABCDEFGHIJKL"
-                }
-            }
-            if (errmsg) {
-                var err1 = new Error(errmsg);
-                err1.status = 500;
-                return next(err1);
-            }
-            leadings = []
-            for (var i = 0; i < espacecount; i++) {
-                //leadings.push("\\(\\fbox{" + (i + 1) + "}\\)=")
-                leadings.push("\\(\\ceec{" + (i + 1) + "}\\)=")
-            }
-            labels=" "+tokens[1]
-        }
-        res.render('psetdetail', { code: results.pset.code, head: results.pset.head, items: results.pset.items, tail: results.pset.tail, leadings: leadings, spacecount: espacecount, labels: labels,psets:psets })
+        res.render('psetdetail', { code: results.pset.code, head: results.pset.head, items: results.pset.items, tail: results.pset.tail, leadings: results.pset.leadings, spacecount: results.pset.espacecount, labels: results.pset.labels, psets:psets })
     });
 };
 
@@ -199,7 +272,7 @@ exports.pset_create_get = function (req, res, next) {
     });*/
     //res.send("pset_create_get Not implement yet")
     console.log(req.body)
-    res.render('psetcreate',{psets:psets})
+    res.render('psetcreate', { psets: psets })
 };
 
 // Handle book create on POST
