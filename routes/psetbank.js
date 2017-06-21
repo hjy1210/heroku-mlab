@@ -11,10 +11,10 @@ var pset_controller = require('../controllers/psetController');
 router.get('/', pset_controller.index);
 
 /* GET request for creating a pset. NOTE This must come before routes that display pset (uses id) */
-/////router.get('/pset/create', pset_controller.pset_create_get);
+router.get('/pset/create', pset_controller.pset_create_get);
 
 /* POST request for creating pset. */
-/////router.post('/pset/create', upload.array('media', 12),pset_controller.pset_create_post);
+router.post('/pset/create', upload.array('media', 12),pset_controller.pset_create_post);
 
 /* GET request to delete pset. */
 router.get('/pset/:id/delete', pset_controller.pset_delete_get);

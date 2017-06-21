@@ -280,6 +280,14 @@ exports.pset_create_post = function (req, res, next) {
     var data = req.body
     /////console.log("data=", data)
     var mypset = JSON.parse(data.pset)
+    //mypset.espaces=parseInt(mypset.espaces) ///// consider transform from xml, convert string to number
+    if (mypset.items && mypset.items.length>0){
+        for (var i=0;i<mypset.items.length;i++){
+            if (mypset.items[i].spaces){
+                mypset.items[i].spaces=parseInt(mypset.items[i].spaces)
+            }
+        }
+    }
     var media = []
     console.log("files.count", req.files.length)
     for (var i = 0; i < req.files.length; i++) {
