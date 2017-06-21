@@ -110,6 +110,7 @@ This open the website.
 * 2017/06/16 relaese two route: /psetbank, /psetbank/psets Version:8d7f7549
 * 2017/06/16 close /pset/create with get and post methods temporaryly for release
 * 2017/06/16 add arrangeData
+* 2017/06/21 可以直接用xml的格式輸入題組
 * Todo:每個題目的input要給定不同的name。
 * Todo: changesrc 是否應該在create pset的時候就完成，不過pset/:id/:filename要改成pset/:code/:filename(因為id在create的時候還不知道)
 * Todo: check as detail as possible can avoid server crash for example: file upload and json content not in consistent. 

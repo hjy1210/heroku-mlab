@@ -1,14 +1,14 @@
 if item.head
   p !{item.head}
-table
+table.noline
   each obj,index in item.choices
     tr
-      td(valign="top") 
-        if !item.single
+      td.noline(valign="top") 
+        if item.single
           input(type='radio' name=itemindex value=index)
         else
           input(type='checkbox' name=itemindex value=index)
-      td(align="left") !{obj}
+      td.noline(align="left") !{obj}
 if item.spaces && item.spaces>0
   -var leadings=item.leadings
   -var labels=item.labels
