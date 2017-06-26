@@ -3,11 +3,4 @@ block entirebody
     div(style="padding:20px")
       if psets
         each pset in psets
-          -var code=pset.code
-          -var head=pset.head
-          -var items=pset.items
-          -var tail=pset.tail
-          -var spacecount=pset.espacecount
-          -var leadings=pset.leadings
-          -var labels=pset.labels
           include ./singlepset

@@ -112,6 +112,16 @@ This open the website.
 * 2017/06/16 add arrangeData
 * 2017/06/21 可以直接用xml的格式輸入題組
 * 2017/06/22 create pset 的時候略為詳細檢查
+* 2017/06/26 將英文科的科漏字用@ABCDEFGHIJKL@的方式呈現，不在需要"10 ABCDEFGHIJKL"的espaces
+* 2017/06/26 將數學科的選填題改成不需要 spaces,直接計數\ceec{\d+}來得到，避免互相矛盾
+* 2017/06/26 增加stdans,格式為陣列，每一元素代表一題,用逗點隔開。每一題的格式為<ans>:<type>:<score>，
+  其中 type為S(代表單選)M(代表多選)F(代表選填)，單或多選時 ans為單一字母，選填時 ans 為答案字母構成的陣列。
+  * [B:S:2] 代表單選題，配分2分，正答為B
+  * [AC:M:5] 代表多選題，配分5分，正答為AC
+  * [[3,1,4]:F:6] 代表選填題，配分6分，正答為[3,1,4]
+  * [K:S:1,E:S:1,J:S:1,F:S:1,G:S:1,I:S:1,B:S:1,H:S:1,A:S:1,D:S:1] 代表由10題組成的題組，全是單選題，
+  每題配分1分，正答分別是K,E,J,....。
+* Todo: pset 的模型需要更改，增加stdans,移除spaces,espaces
 * Todo:每個題目的input要給定不同的name。
 * Todo: changesrc 是否應該在create pset的時候就完成，不過pset/:id/:filename要改成pset/:code/:filename(因為id在create的時候還不知道)
 * Todo: check as detail as possible can avoid server crash for example: file upload and json content not in consistent. 

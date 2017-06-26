@@ -48,14 +48,41 @@ function arrangeData(pset, dir = "") {
   if (dir) {
     id = dir + id
   }
-  if (pset.head)
+  var lastnumber = 1
+  if (pset.head) {
     pset.head = changesrc(pset.head, id)
+    //將@ABCDEFGHIJKL@轉成從" ABCDEFGHIJKL"中選一的select element
+    pset.head = pset.head.replace(/@.+?@/g, (x) => {
+      var s = `<select id='${pset.code}-${lastnumber++}' style='width:60px'><option value=' '> </option>`
+      for (var i = 1; i < x.length - 1; i++) {
+        s += `<option value='${x[i]}'>${x[i]}</option>`
+      }
+      s += '</select>'
+      return s;
+    })
+  }
   if (pset.tail)
     pset.tail = changesrc(pset.tail, id)
   if (pset.items && pset.items.length > 0) {
     for (var i = 0; i < pset.items.length; i++) {
-      if (pset.items[i].head)
+      if (pset.items[i].head) {
         pset.items[i].head = changesrc(pset.items[i].head, id)
+        var matches = pset.items[i].head.match(/\\ceec\{\d+\}/g)
+        var count=0
+        if (matches) {
+          count=matches.length
+        }
+        var mathsymbol = "1234567890-±"
+        for (var ii = 0; ii < count; ii++) {
+          var s = `<select id='${pset.code}-${lastnumber}' style='width:60px'><option value=' '> </option>`
+          for (var j = 0; j < mathsymbol.length; j++) {
+            s += `<option value='${mathsymbol[j]}'>${mathsymbol[j]}</option>`
+          }
+          s += '</select>'
+          pset.items[i].head += `\\(\\ceec{${lastnumber}}\\)=`+s+`\\(\\hspace{0.5cm}\\)`
+          lastnumber++
+        }
+      }
       if (pset.items[i].tail)
         pset.items[i].tail = changesrc(pset.items[i].tail, id)
       if (pset.items[i].choices && pset.items[i].choices.length > 0) {
@@ -116,69 +143,14 @@ exports.pset_detail = function (req, res, next) {
     }
   }, function (err, results) {
     if (err) { return next(err); }
-    //Successful, so render
-    //console.log("_id=", results.pset._id)
-    //var id = "" + results.pset._id
-    //console.log("req.url:", req.url, id, ":", id)
-    //if (results.pset.head)
-    //    results.pset.head = changesrc(results.pset.head, id)
-    //if (results.pset.tail)
-    //    results.pset.tail = changesrc(results.pset.tail, id)
-    //if (results.pset.items && results.pset.items.length > 0) {
-    //    for (var i = 0; i < results.pset.items.length; i++) {
-    //        if (results.pset.items[i].head)
-    //            results.pset.items[i].head = changesrc(results.pset.items[i].head, id)
-    //        if (results.pset.items[i].tail)
-    //            results.pset.items[i].tail = changesrc(results.pset.items[i].tail, id)
-    //        if (results.pset.items[i].choices && results.pset.items[i].choices.length > 0) {
-    //            for (var j = 0; j < results.pset.items[i].choices.length; j++) {
-    //                results.pset.items[i].choices[j] = changesrc(results.pset.items[i].choices[j], id)
-    //            }
-    //        }
-    //        if (results.pset.items[i].spaces && results.pset.items[i].spaces > 0) {
-    //            results.pset.items[i].labels = " 1234567890–±"
-    //            results.pset.items[i].leadings = []
-    //            for (var j = 0; j < results.pset.items[i].spaces; j++) {
-    //                //leadings.push("\\(\\fbox{" + (i + 1) + "}\\)=")
-    //                results.pset.items[i].leadings.push("\\(\\ceec{" + (j + 1) + "}\\)=")
-    //            }
-    //        }
-    //    }
-    //}
-    //var espacecount
-    //var labels
-    //var errmsg
-    //var leadings
-    //var labels
-    //if (results.pset.espaces) {
-    //    var tokens = results.pset.espaces.split(" ")
-    //    if (tokens.length != 2) {
-    //        errmsg = "token length error"
-    //    } else {
-    //        espacecount = parseInt(tokens[0])
-    //        if (isNaN(espacecount) || espacecount < 1 || espacecount > tokens[1].length) {
-    //            errmsg = "format example: 10 ABCDEFGHIJKL"
-    //        }
-    //    }
-    //    if (errmsg) {
-    //        var err1 = new Error(errmsg);
-    //        err1.status = 500;
-    //        return next(err1);
-    //    }
-    //    leadings = []
-    //    for (var i = 0; i < espacecount; i++) {
-    //        //leadings.push("\\(\\fbox{" + (i + 1) + "}\\)=")
-    //        leadings.push("\\(\\ceec{" + (i + 1) + "}\\)=")
-    //    }
-    //    labels = " " + tokens[1]
-    //}
     var errmsg = arrangeData(results.pset)
     if (errmsg) {
       var err1 = new Error(errmsg);
       err1.status = 500;
       return next(err1);
     }
-    res.render('psetdetail', { code: results.pset.code, head: results.pset.head, items: results.pset.items, tail: results.pset.tail, leadings: results.pset.leadings, spacecount: results.pset.espacecount, labels: results.pset.labels, psets: psets })
+
+    res.render('psetdetail', { pset: results.pset, psets: psets })
   });
 };
 
@@ -241,9 +213,9 @@ exports.pset_create_post = function (req, res, next) {
     var mypset = JSON.parse(curpset)
     // ["....."] -> "...." except choices
     // check espaces compatibility
-    var msg=cleanPset(mypset)
-    if (msg){
-       return msg
+    var msg = cleanPset(mypset)
+    if (msg) {
+      return msg
     }
     //mypset.espaces=parseInt(mypset.espaces) ///// consider transform from xml, convert string to number
     //if (mypset.items && mypset.items.length > 0) {
@@ -342,8 +314,8 @@ exports.pset_create_post = function (req, res, next) {
           } else {
             ///// consider transform from xml, convert string to number
             pset.items[i].spaces = parseInt(pset.items[i].spaces)
-            if (!Number.isInteger(pset.items[i].spaces) || pset.items[i].spaces<1) {
-              return `spaces of ${i+1}-th item is not an positive integer`
+            if (!Number.isInteger(pset.items[i].spaces) || pset.items[i].spaces < 1) {
+              return `spaces of ${i + 1}-th item is not an positive integer`
             }
           }
         }
@@ -361,7 +333,7 @@ exports.pset_create_post = function (req, res, next) {
         delete pset.tail
       }
     }
-    var errmsg,espacecount
+    var errmsg, espacecount
     if (pset.espaces) {
       pset.espaces = striparrayoflengthone(pset.espaces)
       if (pset.espaces === '') {
@@ -389,12 +361,12 @@ exports.pset_create_post = function (req, res, next) {
   if (str[0] === '<') {
     xmlStr2jsonStr(str, (err, json) => {
       if (err) return next(err)
-      msg= process(json)
+      msg = process(json)
     })
   } else {
-    msg=process(str)
+    msg = process(str)
   }
-  if (msg) return(next(new Error(msg)))
+  if (msg) return (next(new Error(msg)))
 
 };
 
