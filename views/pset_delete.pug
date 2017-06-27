@@ -1,0 +1,8 @@
+h1 #{pset.code}
+div(style="margin-left:20px")
+  p #[strong ID]: #{pset._id}
+  p #[strong code:] #{pset.code}
+form(method='POST' action='')
+  div.form-group
+    input#id.form-control(type='hidden',name='code', required='true', value=pset.code )
+  button.btn.btn-primary(type='submit') Delete

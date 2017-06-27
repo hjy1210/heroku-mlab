@@ -4,27 +4,19 @@ var xmlStr2jsonStr = require('./xmljsonutil').xmlStr2jsonStr
 
 var psets
 
-function changesrc(str, id) {
-  var s = str.replace(/<img src='/gi, function imgFunction(x) { return "<img src='" + id + "/" })
-  s = s.replace(/<audio src='/gi, function audioFunction(x) { return "<audio src='" + id + "/" })
+function changesrc(str, code) {
+  var s = str.replace(/<img src='/gi, function imgFunction(x) { return "<img src='" + code + "/" })
+  s = s.replace(/<audio src='/gi, function audioFunction(x) { return "<audio src='" + code + "/" })
   return s
 }
 
 exports.index = function (req, res) {
-
-  //async.parallel({
-  //    pset_count: function (callback) {
-  //        Pset.count(callback);
-  //    }
-  //}, function (err, results) {
-  //    res.render('psetindex', { title: 'Local Psets Home', error: err, data: results });
-  //});
   Pset.find({})
     .exec(function (err, list_psets) {
       if (err) { return next(err); }
       psets = list_psets
       //Successful, so render
-      res.render('psetindex', { psets: psets });
+      res.render('index', { psets: psets });
     });
 
 };
@@ -38,69 +30,91 @@ exports.pset_list = function (req, res, next) {
       for (var i = 0; i < list_psets.length; i++) {
         arrangeData(psets[i], "pset/")
       }
-      res.render('psets', { psets: psets });
+      res.render('pset_list', { psets: psets });
     });
 };
 
+exports.testform_get = function (req, res, next) {
+  Pset.find({})
+    .exec(function (err, list_psets) {
+      if (err) { return next(err); }
+      //Successful, so render
+      psets = list_psets
+      for (var i = 0; i < list_psets.length; i++) {
+        arrangeData(psets[i], "pset/")
+      }
+      res.render('testform', { psets: psets });
+    });
+};
+
+exports.testform_post = function (req, res, next) {
+   res.send('NOT IMPLEMENTED: Book update GET');
+}
+
+
 function arrangeData(pset, dir = "") {
-  console.log("_id=", pset._id)
-  var id = "" + pset._id
+  // change id to code
+  console.log("code=", pset.code)
+  var code = "" + pset.code     //"" + pset._id
   if (dir) {
-    id = dir + id
+    code = dir + code
   }
   var lastnumber = 1
   if (pset.head) {
-    pset.head = changesrc(pset.head, id)
+    pset.head = changesrc(pset.head, code)
     //將@ABCDEFGHIJKL@轉成從" ABCDEFGHIJKL"中選一的select element
     pset.head = pset.head.replace(/@.+?@/g, (x) => {
-      var s = `<select id='${pset.code}-${lastnumber++}' style='width:60px'><option value=' '> </option>`
+      var s = `<select id='${pset.code}.${lastnumber}' title='${pset.code}.${lastnumber}' style='width:60px'><option value=' '> </option>`
       for (var i = 1; i < x.length - 1; i++) {
         s += `<option value='${x[i]}'>${x[i]}</option>`
       }
       s += '</select>'
+      lastnumber++
       return s;
     })
   }
   if (pset.tail)
-    pset.tail = changesrc(pset.tail, id)
+    pset.tail = changesrc(pset.tail, code)
   if (pset.items && pset.items.length > 0) {
     for (var i = 0; i < pset.items.length; i++) {
       if (pset.items[i].head) {
-        pset.items[i].head = changesrc(pset.items[i].head, id)
+        pset.items[i].head = changesrc(pset.items[i].head, code)
         var matches = pset.items[i].head.match(/\\ceec\{\d+\}/g)
-        var count=0
+        var count = 0
         if (matches) {
-          count=matches.length
+          count = matches.length
         }
-        var mathsymbol = "1234567890-±"
-        for (var ii = 0; ii < count; ii++) {
-          var s = `<select id='${pset.code}-${lastnumber}' style='width:60px'><option value=' '> </option>`
-          for (var j = 0; j < mathsymbol.length; j++) {
-            s += `<option value='${mathsymbol[j]}'>${mathsymbol[j]}</option>`
+        if (count > 0) {
+          var mathsymbol = "1234567890-±"
+          for (var ii = 0; ii < count; ii++) {
+            var s = `<select id='${pset.code}.${lastnumber}.${ii+1}' title='${pset.code}.${lastnumber}.${ii+1}' style='width:60px'><option value=' '> </option>`
+            for (var j = 0; j < mathsymbol.length; j++) {
+              s += `<option value='${mathsymbol[j]}'>${mathsymbol[j]}</option>`
+            }
+            s += '</select>'
+            pset.items[i].head += `\\(\\ceec{${lastnumber}}\\)=` + s + `\\(\\hspace{0.5cm}\\)`
           }
-          s += '</select>'
-          pset.items[i].head += `\\(\\ceec{${lastnumber}}\\)=`+s+`\\(\\hspace{0.5cm}\\)`
           lastnumber++
         }
       }
       if (pset.items[i].tail)
-        pset.items[i].tail = changesrc(pset.items[i].tail, id)
+        pset.items[i].tail = changesrc(pset.items[i].tail, code)
       if (pset.items[i].choices && pset.items[i].choices.length > 0) {
         for (var j = 0; j < pset.items[i].choices.length; j++) {
-          pset.items[i].choices[j] = changesrc(pset.items[i].choices[j], id)
+          pset.items[i].choices[j] = changesrc(pset.items[i].choices[j], code)
         }
       }
-      if (pset.items[i].spaces && pset.items[i].spaces > 0) {
+      /*if (pset.items[i].spaces && pset.items[i].spaces > 0) {
         pset.items[i].labels = " 1234567890–±"
         pset.items[i].leadings = []
         for (var j = 0; j < pset.items[i].spaces; j++) {
           //leadings.push("\\(\\fbox{" + (i + 1) + "}\\)=")
           pset.items[i].leadings.push("\\(\\ceec{" + (j + 1) + "}\\)=")
         }
-      }
+      }*/
     }
   }
-  var espacecount
+  /*var espacecount
   var labels
   var errmsg
   var leadings
@@ -131,18 +145,21 @@ function arrangeData(pset, dir = "") {
     pset.labels = labels
     pset.espacecount = espacecount
     return null
-  }
+  }*/
 }
 // Display detail page for a specific book
 exports.pset_detail = function (req, res, next) {
-  var id = req.params.id
+  //var id = req.params.id
   async.parallel({
     pset: function (callback) {
-      Pset.findById(req.params.id)
+      Pset.findOne({ 'code': req.params.code })     //Pset.findById(req.params.id)
         .exec(callback);
     }
   }, function (err, results) {
     if (err) { return next(err); }
+    if (!results.pset) {
+      return next(new Error(`code: ${req.params.code} not exists`))
+    }
     var errmsg = arrangeData(results.pset)
     if (errmsg) {
       var err1 = new Error(errmsg);
@@ -155,14 +172,17 @@ exports.pset_detail = function (req, res, next) {
 };
 
 exports.pset_detail_image = function (req, res, next) {
-  console.log(req.params.id, req.params.medianame)
+  console.log(req.params.code, req.params.medianame)   ///// 06/27/2017 change from id to code
   async.parallel({
     pset: function (callback) {
-      Pset.findById(req.params.id)
+      Pset.findOne({ 'code': req.params.code }) /////Pset.findById(req.params.id) change om 06/27/2017
         .exec(callback);
     }
   }, function (err, results) {
     if (err) { return next(err); }
+    if (!results.pset){
+      return next(new Error(`code:${req.params.code} not exists!`))
+    }
     var imgindex
     console.log("results:", results)
     for (var i = 0; i < results.pset.media.length; i++) {
@@ -232,13 +252,17 @@ exports.pset_create_post = function (req, res, next) {
       console.log("files:", file.originalname, file.mimetype, file.size, file.buffer.length)
       media.push({ filename: file.originalname, mimetype: file.mimetype, content: file.buffer })
     }
+    if (media.length > 0) {
+      mypset.media = media
+    }
     var pset = new Pset({
       code: mypset.code,
+      stdans: mypset.stdans,
       items: mypset.items,
       head: mypset.head,
       tail: mypset.tail,
-      media: media,
-      espaces: mypset.espaces
+      media: mypset.media//,
+      //espaces: mypset.espaces
     });
 
     /////console.log('pset: ' + pset);
@@ -263,19 +287,19 @@ exports.pset_create_post = function (req, res, next) {
             return next(new Error(`題組 ${mypset.code} 已經存在`))
           }
           else {
-
             pset.save(function (err) {
               if (err) { return next(err); }
               //successful - redirect to new book record.
               /////console.log("pset.url",pset.url)
               //res.redirect(pset.url);
-              res.redirect('/psetbank')
+              res.redirect('/psetbank/psets')
             });
           }
         })
     }
   }
 
+  // 將首尾的空白字元清除，字串陣列長度為1改成字串
   function striparrayoflengthone(data) {
     if (typeof (data) === 'object' && data.length === 1) {
       return data[0].trim()
@@ -284,8 +308,14 @@ exports.pset_create_post = function (req, res, next) {
     }
   }
 
+  // 將首尾的空白字元清除，字串陣列長度為1改成字串，字串長度為0,根據需要加以清除
   function cleanPset(pset) {
-    pset.code = striparrayoflengthone(pset.code)
+    if (pset.code) {
+      pset.code = striparrayoflengthone(pset.code)
+    }
+    if (pset.stdans) {
+      pset.stdans = striparrayoflengthone(pset.stdans)
+    }
     if (pset.head) {
       pset.head = striparrayoflengthone(pset.head)
       if (pset.head === '') {
@@ -307,7 +337,7 @@ exports.pset_create_post = function (req, res, next) {
             }
           }
         }
-        if (pset.items[i].spaces) {
+        /*if (pset.items[i].spaces) {
           pset.items[i].spaces = striparrayoflengthone(pset.items[i].spaces)
           if (pset.items[i].spaces == '') {
             delete pset.items[i].spaces
@@ -318,7 +348,7 @@ exports.pset_create_post = function (req, res, next) {
               return `spaces of ${i + 1}-th item is not an positive integer`
             }
           }
-        }
+        }*/
         if (pset.items[i].tail) {
           pset.items[i].tail = striparrayoflengthone(pset.items[i].tail)
           if (pset.items[i].tail === '') {
@@ -334,7 +364,7 @@ exports.pset_create_post = function (req, res, next) {
       }
     }
     var errmsg, espacecount
-    if (pset.espaces) {
+    /*if (pset.espaces) {
       pset.espaces = striparrayoflengthone(pset.espaces)
       if (pset.espaces === '') {
         delete pset.espaces
@@ -349,7 +379,7 @@ exports.pset_create_post = function (req, res, next) {
           }
         }
       }
-    }
+    }*/
     return errmsg
   }
 
@@ -367,86 +397,30 @@ exports.pset_create_post = function (req, res, next) {
     msg = process(str)
   }
   if (msg) return (next(new Error(msg)))
-
 };
 
-exports.pset_create_post0 = function (req, res, next) {
-  var data = req.body
-  if (!data.pset) return next(new Error("empty pset"))
-  var str = data.pset.trim()
-  if (str.length === 0) return next(new Error("empty pset"))
-
-  /////console.log("data=", data)
-  var mypset = JSON.parse(data.pset)
-  //mypset.espaces=parseInt(mypset.espaces) ///// consider transform from xml, convert string to number
-  if (mypset.items && mypset.items.length > 0) {
-    for (var i = 0; i < mypset.items.length; i++) {
-      if (mypset.items[i].spaces) {
-        mypset.items[i].spaces = parseInt(mypset.items[i].spaces)
-      }
-    }
-  }
-  var media = []
-  console.log("files.count", req.files.length)
-  for (var i = 0; i < req.files.length; i++) {
-    var file = req.files[i]
-    console.log("files:", file.originalname, file.mimetype, file.size, file.buffer.length)
-    media.push({ filename: file.originalname, mimetype: file.mimetype, content: file.buffer })
-  }
-  var pset = new Pset({
-    code: mypset.code,
-    items: mypset.items,
-    head: mypset.head,
-    tail: mypset.tail,
-    media: media,
-    espaces: mypset.espaces
-  });
-
-  /////console.log('pset: ' + pset);
-  /////console.log("files",req.files)
-
-  var errors = req.validationErrors();
-  if (errors) {
-    console.log("errors:", errors)
-    res.render('psetcreate')
-  }
-  else {
-    // Data from form is valid.
-    // We could check if book exists already, but lets just save.
-    Pset.findOne({ 'code': mypset.code })
-      .exec(function (err, found_code) {
-        if (err) { return next(err); }
-
-        if (found_code) {
-          //code exists, redirect to its detail page
-          /////console.log('found_code: ' + found_code);
-          res.redirect(found_code.url);
-        }
-        else {
-
-          pset.save(function (err) {
-            if (err) { return next(err); }
-            //successful - redirect to new book record.
-            /////console.log("pset.url",pset.url)
-            //res.redirect(pset.url);
-            res.redirect('/psetbank')
-          });
-        }
-      })
-  }
-  //var pset=JSON.parse(req.body.pset)
-  //res.render('psetcreate',{pset:pset})
-  //res.send("create get Not implement yet")
-};
 
 // Display book delete form on GET
 exports.pset_delete_get = function (req, res, next) {
-  res.send('NOT IMPLEMENTED: Book delete GET');
+  Pset.findOne({'code':req.params.code})
+    .exec(function (err, pset) {
+      if (err) { return next(err); }
+      if (!pset){
+        return next(new Error(`code: ${req.params.code} not exists!`))
+      }
+      //Successful, so render
+      res.render('pset_delete', { pset:pset});
+    })
 };
 
 // Handle book delete on POST
 exports.pset_delete_post = function (req, res, next) {
-  res.send('NOT IMPLEMENTED: Book delete POST');
+      //Assume valid bookinstance id in field (should check)
+    Pset.findOne({'code':req.body.code}).remove().exec(function deletePset(err) {
+        if (err) { return next(err); }
+        //success, so redirect to list of bookinstances.
+        res.redirect('/psetbank/psets')
+        });
 };
 
 // Display book update form on GET

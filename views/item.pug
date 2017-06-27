@@ -1,18 +1,19 @@
 if item.head
   p !{item.head}
 table.noline
+  - var choicename=pset.code+"."+(itemindex+1)
   each obj,index in item.choices
     tr
       td.noline(valign="top") 
         if item.single
-          input(type='radio' name=itemindex value=index)
+          input(type='radio' name=choicename title=choicename value=index)
         else
-          input(type='checkbox' name=itemindex value=index)
+          input(type='checkbox' name=choicename title=choicename value=index)
       td.noline(align="left") !{obj}
-if item.spaces && item.spaces>0
-  -var leadings=item.leadings
-  -var labels=item.labels
-  include spaces
+//if item.spaces && item.spaces>0
+//  -var leadings=item.leadings
+//  -var labels=item.labels
+//  include spaces
 if item.tail
   p !{item.tail}
 br

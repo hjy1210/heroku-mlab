@@ -1,12 +1,17 @@
 extends layout
 
 block content
-  h1 title
+  h1 Problem Set list
   
-  ul
-  each pset in pset_list
-    li 
-      a(href=pset.url) #{pset._id} 
-
+  if psets && psets.length>0
+    ul
+      each pset in psets
+        li 
+          a(href=pset.url) #{pset.code}
+          if pset.mediacount>0
+            span (#{pset.mediacount})
+            each item in pset.media
+              span (#{item.filename})
   else
-    li There are no books.
+    p There are no psets.
+  

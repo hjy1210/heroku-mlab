@@ -1,4 +1,4 @@
-extends psetindex
+extends layout
 
 block content
   script().
@@ -35,14 +35,12 @@ block content
       reader.readAsText(file)
     }
   
-  input(type="file" name="infile" id="infile"  onchange="handleset(event)")
+  p.
+    用後面的按鈕輸入題目檔案(格式為xml或json) 
+    #[input(type="file" name="infile" id="infile"  onchange="handleset(event)")]
 
   form(method="post" enctype="multipart/form-data")
-    input(type="file" name="media" id="media" multiple)
-    textarea(name="pset" id="pset" cols="60" rows="15" ondrop="drop(event)" ondragover="allowDrop(event)") !{JSON.stringify(pset,null,2)}
-    input(type="submit" value="submit")
-  if pset
-    - var head=pset.head
-    - var tail=pset.tail
-    - var items=pset.items
-    include ./pset.pug
+    p 用後面的按鈕上傳題組所需的媒體檔案(可多選) #[input(type="file" name="media" id="media" multiple)]
+    textarea(name="pset" id="pset" cols="60" rows="15" readonly ondrop="drop(event)" ondragover="allowDrop(event)").
+      !{JSON.stringify(pset,null,2)}
+    p #[input(type="submit" value="題組上傳")]

@@ -5,9 +5,5 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
   res.redirect('/psetbank');
 });
-router.get('/pugitem', function(req, res, next) {
-  res.render('pugitem');
-  //res.redirect('/catalog');
-});
 
 module.exports = router;
