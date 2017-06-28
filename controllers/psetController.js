@@ -92,7 +92,7 @@ function arrangeData(pset, dir = "") {
               s += `<option value='${mathsymbol[j]}'>${mathsymbol[j]}</option>`
             }
             s += '</select>'
-            pset.items[i].head += `\\(\\ceec{${lastnumber}}\\)=` + s + `\\(\\hspace{0.5cm}\\)`
+            pset.items[i].head += `\\(\\ceec{${ii+1}}\\)=` + s + `\\(\\hspace{0.5cm}\\)`
           }
           lastnumber++
         }
@@ -313,9 +313,9 @@ exports.pset_create_post = function (req, res, next) {
     if (pset.code) {
       pset.code = striparrayoflengthone(pset.code)
     }
-    if (pset.stdans) {
-      pset.stdans = striparrayoflengthone(pset.stdans)
-    }
+    //if (pset.stdans) {
+    //  pset.stdans = striparrayoflengthone(pset.stdans)
+    //}
     if (pset.head) {
       pset.head = striparrayoflengthone(pset.head)
       if (pset.head === '') {

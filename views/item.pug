@@ -5,7 +5,7 @@ table.noline
   each obj,index in item.choices
     tr
       td.noline(valign="top") 
-        if item.single
+        if !item.multiple
           input(type='radio' name=choicename title=choicename value=index)
         else
           input(type='checkbox' name=choicename title=choicename value=index)

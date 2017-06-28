@@ -4,7 +4,10 @@ var Schema = mongoose.Schema;
 
 var PsetSchema = Schema({
   code:{type:String,required:true},
-  stdans:{type:String, required:true},  ///// 06/27/2017 add stdans
+  //stdans:{type:String, required:true},  ///// 06/27/2017 add stdans
+  stdans:[{ans:{type:String,required:true},
+    score:{type:Number,required:true},
+    type:{type:String,required:true}}],
   head: {type: String},
   tail:{type:String},
   items: [{

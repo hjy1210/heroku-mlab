@@ -118,11 +118,11 @@ This open the website.
   其中 type為S(代表單選)M(代表多選)F(代表選填)，單或多選時 ans為單一字母，選填時 ans 為答案字母構成的陣列。
   * [B:S:2] 代表單選題，配分2分，正答為B
   * [AC:M:5] 代表多選題，配分5分，正答為AC
-  * [[3,1,4]:F:6] 代表選填題，配分6分，正答為[3,1,4]
+  * [314:F:6] 代表選填題，配分6分，正答為314
   * [K:S:1,E:S:1,J:S:1,F:S:1,G:S:1,I:S:1,B:S:1,H:S:1,A:S:1,D:S:1] 代表由10題組成的題組，全是單選題，
   每題配分1分，正答分別是K,E,J,....。
-* Todo: pset 的模型需要更改，增加stdans,移除spaces,espaces
-* Todo:每個題目的input要給定不同的name。
+* 2017/06/26:每個題目的input要給定不同的name或id。
+* 2017/06/27 pset 的模型已經更改，增加stdans,移除spaces,espaces
 * Todo: changesrc 是否應該在create pset的時候就完成，不過pset/:id/:filename要改成pset/:code/:filename(因為id在create的時候還不知道)
 * Todo: check as detail as possible can avoid server crash for example: file upload and json content not in consistent. 
 
