@@ -22,10 +22,12 @@ var tagsToReplace = {
   '>': '&gt;'
 };
 
+// 將str中的'&','<','>'字元編碼成&xx;
 function safe_tags_replace(str) {
   return str.replace(/[&<>]/g, x => tagsToReplace[x]);
 }
 
+//將字串data中，<tagname>的內容加以編碼，如此裡面不再有節點。需要用non-greedy搜尋。
 function replaceData(data, tagname) {
   // https://stackoverflow.com/questions/2824302/how-to-make-regular-expression-into-non-greedy
   var re = new RegExp('<' + tagname + '>' + '[\\s\\S]*?</' + tagname + '>', 'g')  // *? for non-greedy match
@@ -36,6 +38,7 @@ function replaceData(data, tagname) {
   })
 }
 
+//將字串data中，<head>,<choices>,<tail>裡面的內容加以編碼，變成字串而已
 function substituteContent(data) {
   var tags = ['head', 'choices', 'tail']
   for (var i = 0; i < tags.length; i++) {
@@ -45,12 +48,16 @@ function substituteContent(data) {
   return data
 }
 
+//將 xml 格式的字串改成 json格式的字串，<head>,<choices>,<tail>裡面只有文字,
+//沒有節點。若再透過JSON.parse轉換後，obj.stdan已經是object。
 function xmlStr2jsonStr(xmlstr, callback) {
   data = substituteContent(xmlstr)
   //var parseString = xml2js.parseString;
+  // 將xml格式的字串改成json格式的字串
   parseString(data, (err, doc) => {
     if (err) return callback(err)
     doc = doc.root
+    // 將doc.stdans的格式由字串改成json物件
     var s = parseStdAns(doc.stdans)
     if (typeof s === "string") return callback(new Error(s))
     doc.stdans = s

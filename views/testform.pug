@@ -4,3 +4,49 @@ block entirebody
     if psets
       each pset in psets
         include ./singlepset
+  form(method="post" id="testform")
+    input(type='text' id='ceectestinfo' name='ceectestinfo' value=ceectestinfo)
+    p #[input(type="button" value="交卷" onclick="processForm()")]
+  script.
+    var psetinfo=JSON.parse(document.getElementById('ceectestinfo').value)
+    function getResponse(){
+      for (var i=0;i<psetinfo.length;i++){
+        getOnePset(i)
+      }
+    }
+    function getOnePset(i){
+      for (var j=0;j<psetinfo[i].patans.length;j++){
+        getOneProblem(i,j)
+      }
+    }
+
+    function getOneProblem(i,j){
+      var element,subelement
+      var v
+      switch(psetinfo[i].patans[j].type){
+        case 'S':
+
+          break
+        case 'M':
+
+          break
+        case 'F':
+          v=""
+          for (var k=0;k<psetinfo[i].patans[j].len;k++){
+            element=document.getElementById(`${psetinfo[i].code}.${j+1}.${k+1}`)
+            v=v+element.value
+          }
+          psetinfo[i].patans[j].userans=v
+          break
+        case 'K':
+          element=document.getElementById(`${psetinfo[i].code}.${j+1}`)
+          psetinfo[i].patans[j].userans=element.value
+          break
+      }
+    }
+    function processForm(ev){
+      getResponse()
+      document.getElementById('ceectestinfo').value=JSON.stringify(psetinfo)
+      alert(JSON.stringify(psetinfo))
+      document.getElementById('testform').submit()
+    }

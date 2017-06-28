@@ -10,48 +10,6 @@ function changesrc(str, code) {
   return s
 }
 
-exports.index = function (req, res) {
-  Pset.find({})
-    .exec(function (err, list_psets) {
-      if (err) { return next(err); }
-      psets = list_psets
-      //Successful, so render
-      res.render('index', { psets: psets });
-    });
-
-};
-// Display list of all books
-exports.pset_list = function (req, res, next) {
-  Pset.find({})
-    .exec(function (err, list_psets) {
-      if (err) { return next(err); }
-      //Successful, so render
-      psets = list_psets
-      for (var i = 0; i < list_psets.length; i++) {
-        arrangeData(psets[i], "pset/")
-      }
-      res.render('pset_list', { psets: psets });
-    });
-};
-
-exports.testform_get = function (req, res, next) {
-  Pset.find({})
-    .exec(function (err, list_psets) {
-      if (err) { return next(err); }
-      //Successful, so render
-      psets = list_psets
-      for (var i = 0; i < list_psets.length; i++) {
-        arrangeData(psets[i], "pset/")
-      }
-      res.render('testform', { psets: psets });
-    });
-};
-
-exports.testform_post = function (req, res, next) {
-   res.send('NOT IMPLEMENTED: Book update GET');
-}
-
-
 function arrangeData(pset, dir = "") {
   // change id to code
   console.log("code=", pset.code)
@@ -87,12 +45,12 @@ function arrangeData(pset, dir = "") {
         if (count > 0) {
           var mathsymbol = "1234567890-±"
           for (var ii = 0; ii < count; ii++) {
-            var s = `<select id='${pset.code}.${lastnumber}.${ii+1}' title='${pset.code}.${lastnumber}.${ii+1}' style='width:60px'><option value=' '> </option>`
+            var s = `<select id='${pset.code}.${lastnumber}.${ii + 1}' title='${pset.code}.${lastnumber}.${ii + 1}' style='width:60px'><option value=' '> </option>`
             for (var j = 0; j < mathsymbol.length; j++) {
               s += `<option value='${mathsymbol[j]}'>${mathsymbol[j]}</option>`
             }
             s += '</select>'
-            pset.items[i].head += `\\(\\ceec{${ii+1}}\\)=` + s + `\\(\\hspace{0.5cm}\\)`
+            pset.items[i].head += `\\(\\ceec{${ii + 1}}\\)=` + s + `\\(\\hspace{0.5cm}\\)`
           }
           lastnumber++
         }
@@ -104,49 +62,126 @@ function arrangeData(pset, dir = "") {
           pset.items[i].choices[j] = changesrc(pset.items[i].choices[j], code)
         }
       }
-      /*if (pset.items[i].spaces && pset.items[i].spaces > 0) {
-        pset.items[i].labels = " 1234567890–±"
-        pset.items[i].leadings = []
-        for (var j = 0; j < pset.items[i].spaces; j++) {
-          //leadings.push("\\(\\fbox{" + (i + 1) + "}\\)=")
-          pset.items[i].leadings.push("\\(\\ceec{" + (j + 1) + "}\\)=")
-        }
-      }*/
     }
   }
-  /*var espacecount
-  var labels
-  var errmsg
-  var leadings
-  var labels
-  if (pset.espaces) {
-    var tokens = pset.espaces.split(" ")
-    if (tokens.length != 2) {
-      errmsg = "token length error"
-    } else {
-      espacecount = parseInt(tokens[0])
-      if (isNaN(espacecount) || espacecount < 1 || espacecount > tokens[1].length) {
-        errmsg = "format example: 10 ABCDEFGHIJKL"
+}
+
+/*
+function modifyData(pset) {
+  // change id to code
+  var lastnumber = 1
+  if (pset.head) {
+    pset.head = changesrc(pset.head,pset.code)
+    //將@ABCDEFGHIJKL@轉成從" ABCDEFGHIJKL"中選一的select element
+    pset.head = pset.head.replace(/@.+?@/g, (x) => {
+      var s = `<select id='${pset.code}.${lastnumber}' title='${pset.code}.${lastnumber}' style='width:60px'><option value=' '> </option>`
+      for (var i = 1; i < x.length - 1; i++) {
+        s += `<option value='${x[i]}'>${x[i]}</option>`
+      }
+      s += '</select>'
+      lastnumber++
+      return s;
+    })
+  }
+  if (pset.tail)
+    pset.tail = changesrc(pset.tail,pset.code)
+  if (pset.items && pset.items.length > 0) {
+    for (var i = 0; i < pset.items.length; i++) {
+      if (pset.items[i].head) {
+        pset.items[i].head = changesrc(pset.items[i].head,pset.code)
+        var matches = pset.items[i].head.match(/\\ceec\{\d+\}/g)
+        var count = 0
+        if (matches) {
+          count = matches.length
+        }
+        if (count > 0) {
+          var mathsymbol = "1234567890-±"
+          for (var ii = 0; ii < count; ii++) {
+            var s = `<select id='${pset.code}.${lastnumber}.${ii+1}' title='${pset.code}.${lastnumber}.${ii+1}' style='width:60px'><option value=' '> </option>`
+            for (var j = 0; j < mathsymbol.length; j++) {
+              s += `<option value='${mathsymbol[j]}'>${mathsymbol[j]}</option>`
+            }
+            s += '</select>'
+            pset.items[i].head += `\\(\\ceec{${ii+1}}\\)=` + s + `\\(\\hspace{0.5cm}\\)`
+          }
+          lastnumber++
+        }
+      }
+      if (pset.items[i].tail)
+        pset.items[i].tail = changesrc(pset.items[i].tail,pset.code)
+      if (pset.items[i].choices && pset.items[i].choices.length > 0) {
+        for (var j = 0; j < pset.items[i].choices.length; j++) {
+          pset.items[i].choices[j] = changesrc(pset.items[i].choices[j],pset.code)
+        }
       }
     }
-    if (errmsg) {
-      //var err1 = new Error(errmsg);
-      //err1.status = 500;
-      //return next(err1);
-      return errmsg
+  }
+}*/
+
+function generateTestInfo(psets) {
+  var info = []
+  for (var i = 0; i < psets.length; i++) {
+    var oneinfo = {}
+    oneinfo.code = psets[i].code
+    oneinfo.patans = []
+    for (var j = 0; j < psets[i].stdans.length; j++) {
+      oneinfo.patans.push({
+        len: psets[i].stdans[j].ans.length,
+        type: psets[i].stdans[j].type, score: psets[i].stdans[j].score
+      })
     }
-    leadings = []
-    for (var i = 0; i < espacecount; i++) {
-      //leadings.push("\\(\\fbox{" + (i + 1) + "}\\)=")
-      leadings.push("\\(\\ceec{" + (i + 1) + "}\\)=")
-    }
-    pset.leadings = leadings
-    labels = " " + tokens[1]
-    pset.labels = labels
-    pset.espacecount = espacecount
-    return null
-  }*/
+    info.push(oneinfo)
+  }
+  return JSON.stringify(info)
 }
+
+exports.index = function (req, res) {
+  Pset.find({})
+    .exec(function (err, list_psets) {
+      if (err) { return next(err); }
+      psets = list_psets
+      //Successful, so render
+      res.render('index', { psets: psets });
+    });
+
+};
+// Display list of all books
+exports.pset_list = function (req, res, next) {
+  Pset.find({})
+    .exec(function (err, list_psets) {
+      if (err) { return next(err); }
+      //Successful, so render
+      psets = list_psets
+      //for (var i = 0; i < list_psets.length; i++) {
+      //  arrangeData(psets[i], "pset/")
+      //}
+      res.render('pset_list', { psets: psets });
+    });
+};
+
+exports.testform_get = function (req, res, next) {
+  Pset.find({})
+    .exec(function (err, list_psets) {
+      if (err) { return next(err); }
+      //Successful, so render
+      psets = list_psets
+      for (var i = 0; i < list_psets.length; i++) {
+        arrangeData(psets[i], "pset/")
+      }
+
+      // ceectestinfo provide pset info for browser side script to collect user's answer
+      var ceectestinfo = generateTestInfo(psets)
+      res.render('testform', { psets: psets, ceectestinfo: ceectestinfo });
+    });
+};
+
+exports.testform_post = function (req, res, next) {
+  //console.log(req.body)
+  var data=req.body.ceectestinfo
+  res.send(JSON.stringify(JSON.parse(data),null,2));
+}
+
+
 // Display detail page for a specific book
 exports.pset_detail = function (req, res, next) {
   //var id = req.params.id
@@ -180,7 +215,7 @@ exports.pset_detail_image = function (req, res, next) {
     }
   }, function (err, results) {
     if (err) { return next(err); }
-    if (!results.pset){
+    if (!results.pset) {
       return next(new Error(`code:${req.params.code} not exists!`))
     }
     var imgindex
@@ -209,19 +244,6 @@ exports.pset_detail_image = function (req, res, next) {
 
 // Display book create form on GET
 exports.pset_create_get = function (req, res, next) {
-  //Get all authors and genres, which we can use for adding to our book.
-  /*async.parallel({
-      authors: function(callback) {
-          Author.find(callback);
-      },
-      genres: function(callback) {
-          Genre.find(callback);
-      },
-  }, function(err, results) {
-      if (err) { return next(err); }
-      res.render('book_form', { title: 'Create Book', authors: results.authors, genres: results.genres });
-  });*/
-  //res.send("pset_create_get Not implement yet")
   console.log(req.body)
   res.render('psetcreate', { psets: psets })
 };
@@ -232,19 +254,10 @@ exports.pset_create_post = function (req, res, next) {
   function process(curpset) {
     var mypset = JSON.parse(curpset)
     // ["....."] -> "...." except choices
-    // check espaces compatibility
     var msg = cleanPset(mypset)
     if (msg) {
       return msg
     }
-    //mypset.espaces=parseInt(mypset.espaces) ///// consider transform from xml, convert string to number
-    //if (mypset.items && mypset.items.length > 0) {
-    //  for (var i = 0; i < mypset.items.length; i++) {
-    //    if (mypset.items[i].spaces) {
-    //      mypset.items[i].spaces = parseInt(mypset.items[i].spaces)
-    //    }
-    //  }
-    //}
     var media = []
     console.log("files.count", req.files.length)
     for (var i = 0; i < req.files.length; i++) {
@@ -255,6 +268,12 @@ exports.pset_create_post = function (req, res, next) {
     if (media.length > 0) {
       mypset.media = media
     }
+
+    ///// 存入資料庫之前可以再做資料整理?
+    ///// 將 @....@, \(\ceec{..}\)展開放到資料庫裡面，反而不利於以後的搜尋與資料處理
+    ///// 將媒體的src更改放到資料庫更是多此一舉，src必須隨網頁的位置而更動才對
+    /////modifyData(mypset)
+    /////
     var pset = new Pset({
       code: mypset.code,
       stdans: mypset.stdans,
@@ -262,7 +281,6 @@ exports.pset_create_post = function (req, res, next) {
       head: mypset.head,
       tail: mypset.tail,
       media: mypset.media//,
-      //espaces: mypset.espaces
     });
 
     /////console.log('pset: ' + pset);
@@ -289,10 +307,8 @@ exports.pset_create_post = function (req, res, next) {
           else {
             pset.save(function (err) {
               if (err) { return next(err); }
-              //successful - redirect to new book record.
-              /////console.log("pset.url",pset.url)
-              //res.redirect(pset.url);
-              res.redirect('/psetbank/psets')
+              //successful - redirect to new pset record.
+              res.redirect(pset.url);
             });
           }
         })
@@ -313,9 +329,7 @@ exports.pset_create_post = function (req, res, next) {
     if (pset.code) {
       pset.code = striparrayoflengthone(pset.code)
     }
-    //if (pset.stdans) {
-    //  pset.stdans = striparrayoflengthone(pset.stdans)
-    //}
+    ////// pset.stdans 已經是object，不須已不能再用 striparrayoflengthone 處理
     if (pset.head) {
       pset.head = striparrayoflengthone(pset.head)
       if (pset.head === '') {
@@ -337,18 +351,6 @@ exports.pset_create_post = function (req, res, next) {
             }
           }
         }
-        /*if (pset.items[i].spaces) {
-          pset.items[i].spaces = striparrayoflengthone(pset.items[i].spaces)
-          if (pset.items[i].spaces == '') {
-            delete pset.items[i].spaces
-          } else {
-            ///// consider transform from xml, convert string to number
-            pset.items[i].spaces = parseInt(pset.items[i].spaces)
-            if (!Number.isInteger(pset.items[i].spaces) || pset.items[i].spaces < 1) {
-              return `spaces of ${i + 1}-th item is not an positive integer`
-            }
-          }
-        }*/
         if (pset.items[i].tail) {
           pset.items[i].tail = striparrayoflengthone(pset.items[i].tail)
           if (pset.items[i].tail === '') {
@@ -364,22 +366,6 @@ exports.pset_create_post = function (req, res, next) {
       }
     }
     var errmsg, espacecount
-    /*if (pset.espaces) {
-      pset.espaces = striparrayoflengthone(pset.espaces)
-      if (pset.espaces === '') {
-        delete pset.espaces
-      } else {
-        var tokens = pset.espaces.split(" ")
-        if (tokens.length != 2) {
-          errmsg = "espaces token length error"
-        } else {
-          espacecount = parseInt(tokens[0])
-          if (isNaN(espacecount) || espacecount < 1 || espacecount > tokens[1].length) {
-            errmsg = "espaces format example: 10 ABCDEFGHIJKL, length of 'ABCDEFGHIJKL'>=10"
-          }
-        }
-      }
-    }*/
     return errmsg
   }
 
@@ -402,25 +388,25 @@ exports.pset_create_post = function (req, res, next) {
 
 // Display book delete form on GET
 exports.pset_delete_get = function (req, res, next) {
-  Pset.findOne({'code':req.params.code})
+  Pset.findOne({ 'code': req.params.code })
     .exec(function (err, pset) {
       if (err) { return next(err); }
-      if (!pset){
+      if (!pset) {
         return next(new Error(`code: ${req.params.code} not exists!`))
       }
       //Successful, so render
-      res.render('pset_delete', { pset:pset});
+      res.render('pset_delete', { pset: pset });
     })
 };
 
 // Handle book delete on POST
 exports.pset_delete_post = function (req, res, next) {
-      //Assume valid bookinstance id in field (should check)
-    Pset.findOne({'code':req.body.code}).remove().exec(function deletePset(err) {
-        if (err) { return next(err); }
-        //success, so redirect to list of bookinstances.
-        res.redirect('/psetbank/psets')
-        });
+  //Assume valid bookinstance id in field (should check)
+  Pset.findOne({ 'code': req.body.code }).remove().exec(function deletePset(err) {
+    if (err) { return next(err); }
+    //success, so redirect to list of bookinstances.
+    res.redirect('/psetbank/psets')
+  });
 };
 
 // Display book update form on GET
