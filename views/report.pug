@@ -1,0 +1,30 @@
+extends purelayout
+block entirebody
+  div(style="padding:20px")
+    p 成績報告:
+    if userpsets
+      - var total=0
+      - var usertotal=0
+      table
+        tr
+          td 題組號
+          td 小題號
+          td 題型
+          td 配分
+          td 標準答案
+          td 作答
+          td 得分
+        each pset in userpsets
+          each pat,index in pset.stdans
+            - total=total+pat.score
+            - usertotal=usertotal+pat.scoreGot
+            tr
+              td #{pset.code}
+              td #{index+1}
+              td #{pat.type}
+              td #{pat.score}
+              td #{pat.ans}
+              td #{pat.userans.replace(/ /g,"?")}
+              td #{pat.scoreGot}
+      p 
+      p 整卷總分為 #{total}分，你的得分為 #{usertotal}分。

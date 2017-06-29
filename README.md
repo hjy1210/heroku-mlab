@@ -123,7 +123,7 @@ This open the website.
   每題配分1分，正答分別是K,E,J,....。
 * 2017/06/26:每個題目的input要給定不同的name或id。
 * 2017/06/27 pset 的模型已經更改，增加stdans,移除spaces,espaces
-* Todo: changesrc 是否應該在create pset的時候就完成，不過pset/:id/:filename要改成pset/:code/:filename(因為id在create的時候還不知道)
+* 2017/06/29 增加 testform_get, testform_post, 完成計分報告
 * Todo: check as detail as possible can avoid server crash for example: file upload and json content not in consistent. 
 
 
