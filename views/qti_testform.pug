@@ -1,0 +1,57 @@
+extends purelayout
+block entirebody
+  h1(style='text-align:center') 線上練習
+  div(style="padding:20px")
+    if qtis
+      each qti in qtis
+        include ./singleqti
+  form(method="post" id="qti_testform")
+    input(type='text' id='qtiinfo' name='qtiinfo' value=qtiinfo hidden)
+    p #[input(type="button" value="看練習結果" onclick="processForm()")]
+  script.
+    var qtiinfo=JSON.parse(document.getElementById('qtiinfo').value)
+    function getResponse(){
+      for (var i=0;i<psetinfo.length;i++){
+        getOnePset(i)
+      }
+    }
+    function getOnePset(i){
+      for (var j=0;j<psetinfo[i].stdans.length;j++){
+        getOneProblem(i,j)
+      }
+    }
+
+    function getOneProblem(i,j){
+      var element,subelements,parent
+      var v
+      switch(psetinfo[i].stdans[j].type){
+        case 'S':
+        case 'M':
+          //parent=document.getElementById(`${psetinfo[i].code}`)
+          subelements=document.getElementsByName(`${psetinfo[i].code}.${j+1}`)
+          v=""
+          for (var k=0;k<subelements.length;k++){
+            if (subelements[k].checked) v=v+subelements[k].value
+          }
+          psetinfo[i].stdans[j].userans=v
+          break
+        case 'F':
+          v=""
+          for (var k=0;k<psetinfo[i].stdans[j].len;k++){
+            element=document.getElementById(`${psetinfo[i].code}.${j+1}.${k+1}`)
+            v=v+element.value
+          }
+          psetinfo[i].stdans[j].userans=v
+          break
+        case 'K':
+          element=document.getElementById(`${psetinfo[i].code}.${j+1}`)
+          psetinfo[i].stdans[j].userans=element.value
+          break
+      }
+    }
+    function processForm(ev){
+      getResponse()
+      document.getElementById('psetinfo').value=JSON.stringify(psetinfo)
+      //alert(JSON.stringify(psetinfo))
+      document.getElementById('testform').submit()
+    }

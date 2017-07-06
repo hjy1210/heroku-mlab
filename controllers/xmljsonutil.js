@@ -109,4 +109,25 @@ function parseStdAns(str) {
   return stdans
 }
 
-module.exports = { xmlStr2jsonStr, parseStdAns }
+function nodeInfo(node, prefix = "") {
+  var str = prefix + node.nodeName + "\n"
+  var i
+  if (node.attributes) {
+    for (i = 0; i < node.attributes.length; i++) {
+      str += `${prefix}  ${node.attributes[i].nodeName}:${node.attributes[i].nodeValue}` + "\n"
+    }
+  }
+  if (node.childNodes) {
+    for (i = 0; i < node.childNodes.length; i++) {
+      if (node.childNodes[i].nodeName != "#text") {
+        str += nodeInfo(node.childNodes[i], prefix + "  ")
+      } else {
+        var v = node.childNodes[i].nodeValue.trim()
+        if (v !== "") str += prefix + "  " + v + "\n"
+      }
+    }
+  }
+  return str
+}
+
+module.exports = { xmlStr2jsonStr, parseStdAns,nodeInfo }

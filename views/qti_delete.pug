@@ -1,0 +1,8 @@
+h1 #{qti.identifier}
+div(style="margin-left:20px")
+  p #[strong ID]: #{qti._id}
+  p #[strong identifier:] #{qti.identifier}
+form(method='POST' action='')
+  div.form-group
+    input#id.form-control(type='hidden',name='identifier', required='true', value=qti.identifier)
+  button.btn.btn-primary(type='submit') Delete

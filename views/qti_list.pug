@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  h1 Qti list
+  
+  if qtis && qtis.length>0
+    ul
+      each qti in qtis
+        li 
+          a(href=qti.url) #{qti.identifier}
+          if qti.mediacount>0
+            span (#{qti.mediacount})
+            each item in qti.media
+              span (#{item.filename})
+  else
+    p There are no qtis.
+  

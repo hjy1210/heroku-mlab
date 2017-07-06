@@ -221,5 +221,10 @@ module.exports = mongoose.model('Pset', PsetSchema);
     2. 分析req.files(附件檔案)，建構屬性media。
     3. 用Pset產生mongoose 物件，若該物件的code在資料庫中已經出現，答覆不能重複，否則加入資料庫。
 
+# QTI
+* assessmentItem 的 XML 檔案，可用[XML Validator - XSD (XML Schema)](https://www.freeformatter.com/xml-validator-xsd.html)來檢查是否Well-formed and valid。
 
+* assessmentItem 也可以用套件 xsd-schema-validator(在controllers/modules/xmlutils.js裡實作validate) 加以validate，可惜速度有點慢。
+* [QTI samples](https://webapps.ph.ed.ac.uk/qtiworks/anonymous/samples)中，可以看到QTI samples的實作，透過view page source，可以看到個個xxxInteraction的UI實作以及評分的javascript。
+* 2017/07/06 開始用xmldom解析QTI item.
 

@@ -11,6 +11,7 @@ var helmet = require('helmet');
 var index = require('./routes/index');
 var users = require('./routes/users');
 var psetbank = require('./routes/psetbank');
+var qtibank = require('./routes/qtibank');
 
 var mongoose = require('mongoose');
 //mongoose.connect("mongodb://localhost:27017/conFusion");
@@ -41,6 +42,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 app.use('/users', users);
 app.use('/psetbank',psetbank)
+app.use('/qtibank',qtibank)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
