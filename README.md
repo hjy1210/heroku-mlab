@@ -227,4 +227,5 @@ module.exports = mongoose.model('Pset', PsetSchema);
 * assessmentItem 也可以用套件 xsd-schema-validator(在controllers/modules/xmlutils.js裡實作validate) 加以validate，可惜速度有點慢。
 * [QTI samples](https://webapps.ph.ed.ac.uk/qtiworks/anonymous/samples)中，可以看到QTI samples的實作，透過view page source，可以看到個個xxxInteraction的UI實作以及評分的javascript。
 * 2017/07/06 開始用xmldom解析QTI item.
+* 2017/07/07 開始分析QTI的itemBody
 

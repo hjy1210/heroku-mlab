@@ -2,45 +2,33 @@ extends layout
 
 block content
   script().
-    function allowDrop(ev) {
-      ev.preventDefault();
-    }
-    // https://github.com/aadsm/jschardet
-    function drop(ev) {
-      ev.preventDefault();
-      var file = ev.dataTransfer.files[0];
-      var reader = new FileReader()
-      reader.onloadend=(ev)=>{
-          //console.log(jschardet.detect(ev.target.result).encoding)
-          //var encoding=jschardet.detect(ev.target.result).encoding
-          //reader.readAsText(file)
-          //reader.onloadend=(event)=>{
-            document.getElementById("pset").value=event.target.result
-            console.log(JSON.parse(event.target.result))
-          //}
-      }
-      reader.readAsText(file)
-    }
     function handleset(ev){
       //ev.preventDefault();
-      var count=document.getElementById("infile").files.length
+      var files=document.getElementById("media").files
+      var count=files.length
       console.log("count ="+count)
       if (count===0)
         return
+      var file
+      for (var i=0;i<files.length;i++){
+        var filename=files[i].name
+        if (filename.substr(filename.lastIndexOf(".")+1).toLowerCase()==="xml"){
+          file=files[i]
+          break
+        }
+      }
+      if (!file) return
       var reader=new FileReader()
-      var file = document.getElementById("infile").files[0];
       reader.onloadend = (ev)=>{
         document.getElementById("qti").value=reader.result
       }
       reader.readAsText(file)
     }
   
-  p.
-    用後面的按鈕輸入題目檔案(格式為QTI XML) 
-    #[input(type="file" name="infile" id="infile"  onchange="handleset(event)")]
 
   form(method="post" enctype="multipart/form-data")
-    p 用後面的按鈕上傳題組所需的媒體檔案(可多選) #[input(type="file" name="media" id="media" multiple)]
+    p 用後面的按鈕上傳題組(QTI XML格式)以及所需的媒體檔案(可多選) 
+      | #[input(type="file" name="media" id="media" multiple onchange="handleset(event)")]
     textarea(name="qti" id="qti" cols="60" rows="15" readonly ondrop="drop(event)" ondragover="allowDrop(event)").
       
     p #[input(type="submit" value="題組上傳")]
