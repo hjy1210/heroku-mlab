@@ -268,6 +268,11 @@ If we put  `<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/Ma
 
 heroku-mlab/public/mhchem.html is an example.
 
+Put in QtiWorks, after `<mpadded height="0">` change to  `<mpadded height="0px">`, display correctly.
+
+Put in TAO, even `<mpadded height="0">` changed to  `<mpadded height="0px">`, display still not correct.
+
+
 ## ckeditor
 TAO use ckeditor to edit testItem.
 
@@ -275,4 +280,50 @@ It is time to study using ckeditor as front-end editor for QTIItem.
 
 cjkeditor + mathjax-node + mathjax + javascript is the future.
 
+## moodle+mathjax+mhchem.js
+
+從 [MoodleWindowsInstaller-latest-33.zip](https://download.moodle.org/download.php/windows/MoodleWindowsInstaller-latest-33.zip) 下載 MoodleWindowsInstaller-latest-33.zip，解壓縮到適當的目錄，例如d:\moodle-33。
+
+Moodle 與 TAO 都是使用 Apache+PHP+MySql，若兩者都安裝在同一台機器上，必須解決port相衝突的問題。
+
+Moddle的預設安裝，Apache使用tcp 80,443，MySql使用tcp 3306。
+
+TAO的預設安裝，Apache使用tcp 89，MySql使用tcp 3306。
+
+為了解決MySql的衝突，將 Moodle 的 MySql port 改成 3305，方法如下：
+
+* 點擊 server\xampp-control.exe，點擊 XAMPP control pane l的Apache > Config 按鈕，選取PHP(php.ini)項目
+  * 將 mysqli.default_port = 3306 改成 mysqli.default_port = 3305
+  * 將 mysql.default_port=3306 改成 mysql.default_port=3305
+* 點擊 XAMPP control panel 的 MySql > Config 按鈕，選取my.ini項目
+  * 將 [client] 裡面的 port=3306 改成 port=3305
+  * 將 [mysqld] 裡面的 port=3306 改成 port=3305
+
+
+管理者用來開創線上學校，老師用來開課，學生用來學習。
+
+要設定moodle可以顯示數學與化學方程式，請依下列步驟：
+
+* Administration > Site administration > Plugins > Filters > Manage filters 將 mathjax filter 啟用，並設定mathjax的URL。
+* 編輯 Administration > Site administration > Plugins > Filters > MathJax > MathJax configuration，加入 TeX: { extensions: ["AMSmath.js","AMSsymbols.js","mhchem.js","noErrors.js","noUndefined.js"] },
+* 相關課程  Administration > Course administration > Filters，將 mathjax filter 啟用
+
+## TAO
+從 [TAO_3.1.0-RC7_Windows_setup.exe](https://www.taotesting.com/get-tao/official-tao-packages/) 下載 TAO_3.1.0-RC7_Windows_setup.exe。
+
+點擊 TAO_3.1.0-RC7_Windows_setup.exe 進行Tao的安裝，例如安裝到 d:\xamppWithTAO。
+
+要讓Tao可以用latex語法輸入數學公式：
+
+* Following the instruction appeared in 
+[enable-math-expression-in-items](https://hub.taocloud.org/articles/third-party-tools-and-libraries/enable-math-expression-in-items),
+* download [mathjax-shrunk.zip](https://hub.taocloud.org/resources/taohub-articles/articles/third-party/mathjax-shrunk.zip) and 
+* unzip its content at subdirectory d:\xamppWithTao\htdocs\taoQtiItem\views\js\mathjax
+Tao installer package for Windows
+
+Note: TAO 無法輸入化學公式。
+
+## Tao, Moodle coorperate by LTI
+Following [how-to-deliver-a-test-using-lti](https://hub.taocloud.org/articles/tutorials/how-to-deliver-a-test-using-lti),
+we can let moodle use external tool provided by tao to perform examinations.
 
