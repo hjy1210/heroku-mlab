@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  h1 Qti list
+  
+  if qtis && qtis.length>0
+    ul
+      each qti in qtis
+        li 
+          a(href="/cmlbank/qti/"+qti.identifier) #{qti.identifier}
+  else
+    p There are no qtis.
+  

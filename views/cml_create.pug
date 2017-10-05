@@ -1,0 +1,34 @@
+extends layout
+
+block content
+  script().
+    function handleset(ev){
+      //ev.preventDefault();
+      var files=document.getElementById("media").files
+      var count=files.length
+      console.log("count ="+count)
+      if (count===0)
+        return
+      var file
+      for (var i=0;i<files.length;i++){
+        var filename=files[i].name
+        if (filename.substr(filename.lastIndexOf(".")+1).toLowerCase()==="json"){
+          file=files[i]
+          break
+        }
+      }
+      if (!file) return
+      var reader=new FileReader()
+      reader.onloadend = (ev)=>{
+        document.getElementById("qti").value=reader.result
+      }
+      reader.readAsText(file)
+    }
+  
+
+  form(method="post" enctype="multipart/form-data")
+    p 用後面的按鈕上傳題組(cml json格式)
+      | #[input(type="file" name="media" id="media" onchange="handleset(event)")]
+    textarea(name="qti" id="qti" cols="60" rows="15" readonly ondrop="drop(event)" ondragover="allowDrop(event)").
+      
+    p #[input(type="submit" value="題組上傳")]

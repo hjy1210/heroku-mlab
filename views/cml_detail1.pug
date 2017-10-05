@@ -1,0 +1,11 @@
+extends cmlpurelayout
+
+block entirebody
+  h2(id=qti.identifier) #{qti.identifier}
+  div.
+    !{qti.html}
+  script.
+    var testInfo={#{qti.identifier}:{responseInfo:!{qti.responseInfo}}}
+  script(src="/scripts/qticlient.js")
+  br
+  p #[a(href=qti.url+"/delete") Delete Pset]

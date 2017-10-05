@@ -1,0 +1,14 @@
+extends cmlpurelayout
+
+block stylecontent
+  style #{styleContent}
+
+block entirebody
+  h2 #{qti.identifier}
+  div.
+    !{html}
+  script.
+    var testInfo= !{testInfoStr}
+  script(src="/scripts/qticlient.js")
+  br
+  p #[a(href="/cmlbank/qti/"+qti.identifier+"/delete") Delete Cml]
