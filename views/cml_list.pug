@@ -1,13 +1,15 @@
 extends layout
 
 block content
-  h1 Qti list
+  h1 Cml list
   
   if qtis && qtis.length>0
     ul
       each qti in qtis
         li 
           a(href="/cmlbank/qti/"+qti.identifier) #{qti.identifier}
+          | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
+          a(href="/cmlbank/qti/"+qti.identifier+"/delete" style="display:inline-block;") <i class="fa fa-trash-o" aria-hidden="true"></i>
   else
     p There are no qtis.
   

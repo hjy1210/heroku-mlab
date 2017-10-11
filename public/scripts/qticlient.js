@@ -23,7 +23,8 @@ function getAllResponse() {
       res[identifier][name] = getResponse(identifier, name)
     }
   }
-  console.log(res)
+  //console.log(res)
+  return res
 }
 function gaptextClick(e, identifier) {
   var name = e.target.getAttribute("name")
@@ -80,7 +81,7 @@ for (var id in testInfo) {
   for (j=0;j<elements.length;j++) elements[j].setAttribute('name',identifier+"_"+elements[j].getAttribute("name"))
   
   data[identifier] = {}
-  var gaptextElements = document.getElementById(identifier).getElementsByClassName('gapText')
+  var gaptextElements = document.getElementById(identifier).getElementsByClassName('gaptext')
   for (var i = 0; i < gaptextElements.length; i++) {
     //console.log(i,gaptextElements[i].classList)
     var name = gaptextElements[i].getAttribute("name")

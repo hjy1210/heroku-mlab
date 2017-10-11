@@ -34,8 +34,8 @@ router.post('/qti/:id/update', cml_controller.qti_update_post);
 /* GET request for one qti. */
 router.get('/qti/:identifier', cml_controller.qti_detail);
 
-/* Get image in one qti */
-router.get('/qti/:identifier/:medianame', cml_controller.qti_detail_image);
+router.post('/qti/:identifier', cml_controller.qti_detail_post);
+
 
 /* GET request for list of all qti items. */
 router.get('/qtis', cml_controller.qti_list);

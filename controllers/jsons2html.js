@@ -7,7 +7,7 @@ module.exports=function jsons2html(jsons){
   var identifiers=[]
   var testInfo={}
   for (i=0;i<jsons.length;i++){
-    identifier=`qti_item_${i+1}`
+    identifier=jsons[i].identifier //`qti_item_${i+1}`
     identifiers.push(identifier)
     testInfo[identifier]={responseInfo:jsons[i].responseInfo,
       styleContent:jsons[i].styleContent,html:jsons[i].html}
