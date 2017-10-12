@@ -73,12 +73,12 @@ exports.testform_get = function (req, res, next) {
 exports.testform_post = function (req, res, next) {
   //res.send('NOT IMPLEMENTED: Book update POST');
   var r = JSON.parse(req.body.answersheet)
-  console.log("r",r)
+  //console.log("r",r)
   var ids=[]
   for (var x in r){
     ids.push(x)
   }
-  console.log("ids",ids)
+  //console.log("ids",ids)
   Qti.find({identifier:{$in:ids}})
     .exec(function (err, list){
       if (err) { return next(err); }
@@ -92,7 +92,7 @@ exports.testform_post = function (req, res, next) {
         //res1+=JSON.stringify(JSON.parse(results[x].itemInfo).responseInfo,null,2)
         var x=list[i].identifier
         testInfo[x] = JSON.parse(list[i].itemInfo)
-        console.log("testInfo[x]",x,testInfo[x])
+        //console.log("testInfo[x]",x,testInfo[x])
         corrects[x] = testInfo[x].responseInfo
         for (var y in corrects[x]) {
           if (corrects[x][y].mapping) {
@@ -108,9 +108,10 @@ exports.testform_post = function (req, res, next) {
           outcomes: outcomes[x], responseProcessing: processings[x]
         }
       }
-      console.log(scoreInfo)
+      //console.log(scoreInfo)
       var scoreResults = getScore(scoreInfo)
-      res.send(JSON.stringify(scoreResults, null, 2))
+      res.render('cml_test_report',{scoreResults:scoreResults})
+      //res.send(JSON.stringify(scoreResults, null, 2))
 
   })
 }
@@ -204,7 +205,7 @@ exports.qti_detail_post = function (req, res, next) {
 
 // Display book create form on GET
 exports.qti_create_get = function (req, res, next) {
-  console.log(req.body)
+  //console.log(req.body)
   res.render('cml_create', { qtis: qtis })
 };
 
@@ -218,11 +219,11 @@ exports.qti_create_post = function (req, res, next) {
 
     var qti = new Qti(myqti);
 
-    console.log('qti: ' + qti);
+    //console.log('qti: ' + qti);
 
     var errors = req.validationErrors();
     if (errors) {
-      console.log("errors:", errors)
+      //console.log("errors:", errors)
       res.render('cml_create')
     }
     else {

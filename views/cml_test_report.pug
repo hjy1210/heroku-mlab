@@ -1,0 +1,10 @@
+extends cmlpurelayout
+
+block entirebody
+  h1  報告
+  each item,itemid in scoreResults
+    h2 #{itemid}
+    each content, contentkey in item
+        h3 #{contentkey}
+        each x,xkey in content
+          p #{xkey} : #{x}

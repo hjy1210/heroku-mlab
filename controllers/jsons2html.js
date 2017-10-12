@@ -24,7 +24,7 @@ module.exports=function jsons2html(jsons){
     //var elements=divnode.querySelectorAll("*[name]")
     //for (j=0;j<elements.length;j++) elements[j].setAttribute('name',identifier+"_"+elements[j].getAttribute("name"))
     divnode.setAttribute("id",identifier)
-    divContent+=new XMLSerializer().serializeToString(divnode)+"\n"
+    divContent+=`<h2>${identifier}</h2>\n`+new XMLSerializer().serializeToString(divnode)+"\n"
   }
   for (var id in testInfo){
     testInfo[id]["styleContent"]=""
