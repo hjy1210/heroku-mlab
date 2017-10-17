@@ -9,9 +9,14 @@ function getResponse(identifier, name) {
     if (elements[i].classList.contains('gap') && elements[i].getAttribute("value")) {
       res.push(elements[i].getAttribute("value") + " " + elements[i].getAttribute("identifier"))
     }
-    else if (elements[i].tagName.toLowerCase() === "input" && elements[i].checked) res.push(elements[i].getAttribute("value"))
-    else if (elements[i].tagName.toLowerCase() === "option" && elements[i].selected) res.push(elements[i].getAttribute("value"))
+    else if (elements[i].tagName.toLowerCase() === "input") {
+      if (elements[i].getAttribute("type")=="checkbox" && elements[i].checked) res.push(elements[i].getAttribute("value"))
+      if (elements[i].getAttribute("type")=="radio" && elements[i].checked) res=elements[i].getAttribute("value")
+      if (elements[i].getAttribute("type")=="text") res=elements[i].getAttribute("value")
+    }
+    else if (elements[i].tagName.toLowerCase() === "option" && elements[i].selected) res=elements[i].getAttribute("value")
   }
+  if (elements[0].getAttribute("type")=="radio" && res instanceof Array) res=res[0]
   return res
 }
 

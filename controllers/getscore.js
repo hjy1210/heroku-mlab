@@ -6,18 +6,19 @@ function score(scoreInfo,itemid,node) {
     case "variable":
       var id = node.getAttribute("identifier")
       if (scoreInfo[itemid].outcomes[id] != null) {
-        if (typeof scoreInfo[itemid].outcomes[id]==="object"){
-          return scoreInfo[itemid].outcomes[id][0]
-        } else {
-          return scoreInfo[itemid].outcomes[id]
-        }
+        //if (typeof scoreInfo[itemid].outcomes[id]==="object"){
+        //  return scoreInfo[itemid].outcomes[id][0]
+        //} else {
+        //  return scoreInfo[itemid].outcomes[id]
+        //}
+        return scoreInfo[itemid].outcomes[id]
       } else if (scoreInfo[itemid].responses[id] != null){
-        if (typeof scoreInfo[itemid].responses[id]==="object"){
-          return scoreInfo[itemid].responses[id][0]
-        } else {
-          return scoreInfo[itemid].responses[id]
-        }
-       
+        //if (typeof scoreInfo[itemid].responses[id]==="object"){
+        //  return scoreInfo[itemid].responses[id][0]
+        //} else {
+        //  return scoreInfo[itemid].responses[id]
+        //}
+        return scoreInfo[itemid].responses[id]
       }
       //if (itemInfo.outcomeInfo[id]!=null) return parseFloat(itemInfo.outcomeInfo[id])
       //if (scoreInfo[itemid].responses[id] != null) return scoreInfo[itemid].responses[id][0]
@@ -49,10 +50,12 @@ function score(scoreInfo,itemid,node) {
       var v = 0
       var id = node.getAttribute("identifier")
       var defaultValue = mapping.getAttribute("defaultValue")
-      for (var i = 0; i < scoreInfo[itemid].responses[id].length; i++) {
+      var responses=scoreInfo[itemid].responses[id]
+      if (! (responses instanceof Array)) responses=[responses] //  單選題也可以用mapping
+      for (var i = 0; i < responses.length; i++) {
         var value = defaultValue
         for (var j = 0; j < mapping.childNodes.length; j++) {
-          if (mapping.childNodes[j].getAttribute("mapKey") === scoreInfo[itemid].responses[id][i]) {
+          if (mapping.childNodes[j].getAttribute("mapKey") === responses[i]) {
             value = mapping.childNodes[j].getAttribute("mappedValue")
             break
           }
@@ -90,7 +93,7 @@ function score(scoreInfo,itemid,node) {
     case "product":
       return score(scoreInfo,itemid,node.childNodes[0]) * score(scoreInfo,itemid,node.childNodes[1])
     case "correct":
-      return scoreInfo[itemid].corrects[node.getAttribute("identifier")].correctResponse[0]
+      return scoreInfo[itemid].corrects[node.getAttribute("identifier")].correctResponse
     case "match":
       var v0 = score(scoreInfo,itemid,node.childNodes[0])
       var v1 = score(scoreInfo,itemid,node.childNodes[1])
