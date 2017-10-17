@@ -327,3 +327,15 @@ Note: TAO 無法輸入化學公式。
 Following [how-to-deliver-a-test-using-lti](https://hub.taocloud.org/articles/tutorials/how-to-deliver-a-test-using-lti),
 we can let moodle use external tool provided by tao to perform examinations.
 
+## qti-demo-cml2json
+cml2json.js is a library function in qti-demo project.
+
+use cml2json.js to convert cml file to jsonfile
+
+## Status
+1. create item in json format
+    * edit cml file: sat2_bio_2016_10_11.cml
+    * `node scripts\cml2json sat2_bio_2016_10_11.cml` generate sat2_bio_2016_10_11.json 
+2. In heroku-mlab web site
+    * http://localhost:3000/cmlbank/qti/create, upload sat2_bio_2016_10_11.json as a cml item.
+    * http://localhost:3000/cmlbank/qtitestform, random sample 5 items as a testfrom.
