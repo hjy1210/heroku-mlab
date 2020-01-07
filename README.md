@@ -1,3 +1,36 @@
+# 2020/01/06 摘要
+
+## mlab.com
+* 在 mlab.com 我有帳號 w3im, 使用者 hjyanghj
+* hjyanghj 已建立資料庫 ims
+* ims 的連接字串為 `mongodb://<dbuser>:<dbpassword>@ds111791.mlab.com:11791/ims`，ims 的使用者有hjy,hjy2,hjyang三位，各有各的密碼。
+
+## 資料庫設定
+app.js 裡面有一行
+```
+var mongoDB = process.env.MONGODB_URI || "mongodb://localhost:27017/conFusion"
+```
+代表可用環境變數 MONGODB_URI 來儲存mongodb資料庫的連接字串。可用前一節mlab.com裡的ims資料庫的任一使用者來設定連接字串。
+
+
+## 啟動 express server
+* 用 Visual Studio Code 開啟 HEROKU-MLAB 資料夾
+* Terminal >  Run Task > npm:dev
+## 瀏覽 
+* 用瀏覽器瀏覽 http://localhost:3000/
+* 選取 All Cmls, Create new cml, Cml Test Form
+* All Psets, Create new pset, Pset Test Form, All Qtis, Create new qti, Qti Test Form 等選項仍未完成
+
+## 新增 cml 題組
+* 在 qti-demo 中，用 `node scripts\cml2json sat2_phy_2016_03.cml` 指令，由 `sat2_phy_2016_03.cml` 產生 `sat2_phy_2016_03.json, sat2_phy_2016_03.xml, sat2_phy_2016_03.zip`。
+* 用瀏覽器瀏覽 http://localhost:3000/
+* 選取 `Create New Cml`，選擇檔案 `sat2_phy_2016_03.json`，按上傳按鈕，完成一題組的上傳。
+* 在 qti-demo 中，batchcml2json.bat 可用來批次將 .cml 檔轉檔成 json,xml,zip檔。
+* http://localhost:3000/cmlbank/qtitestform, random sample 5 items as a testfrom.
+
+## Heroku-Mlab
+目前在[heroku.com](https://guarded-gorge-99572.herokuapp.com/psetbank/testform) 的版本為 2017/06/30 提交的 64f75b3d 版本。
+
 # express
 ## nodemon
 Package nodemon can be used to monitor the changes of your website.
