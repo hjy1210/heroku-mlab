@@ -1,3 +1,4 @@
+require('dotenv').config()
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -16,8 +17,9 @@ var cmlbank = require('./routes/cmlbank');
 
 var mongoose = require('mongoose');
 //mongoose.connect("mongodb://localhost:27017/conFusion");
-var mongoDB = process.env.MONGODB_URI || "mongodb://localhost:27017/conFusion"
-mongoose.connect(mongoDB)
+// package dotenv with require('dotenv').config() and .env file at project root provide value of process.env.MONGODB_URI
+var mongoDB = process.env.MONGODB_URI || "mongodb://localhost:27017/conFusion" // "mongodb+srv://<username>:<password>@ims.psokp.mongodb.net/<database>?retryWrites=true&w=majority" IS OK
+mongoose.connect(mongoDB, {useNewUrlParser: true, useUnifiedTopology: true })  // mongoose 5.10 {useNewUrlParser: true, useUnifiedTopology: true }
 var db=mongoose.connection
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
