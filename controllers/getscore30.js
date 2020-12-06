@@ -93,7 +93,7 @@ function score(scoreInfo, itemid, node) {
 		case 'qti-product':
 			return score(scoreInfo, itemid, node.childNodes[0]) * score(scoreInfo, itemid, node.childNodes[1]);
 		case 'qti-correct':
-			return scoreInfo[itemid].corrects[node.getAttribute('identifier')]['qti-corect-response'];
+			return scoreInfo[itemid].corrects[node.getAttribute('identifier')]['qti-correct-response'];
 		case 'qti-match':
 			var v0 = score(scoreInfo, itemid, node.childNodes[0]);
 			var v1 = score(scoreInfo, itemid, node.childNodes[1]);

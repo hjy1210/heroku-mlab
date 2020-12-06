@@ -376,3 +376,9 @@ use cml2json.js to convert cml file to jsonfile
 ## QTI3.0
 2020/12/6 以前用 getscore21.js(getscore.js), cmlController21.js(cmlController.js) 搭配 QTI2.1 (qti-demo)的 cml/json。
 2020/12/6 以後用 getscore30.js, cmlController30.js 搭配 QTI3.0(qti-demo) 的 cml/json。
+
+目前的評分，適用於
+* qti-choice-interaction 單選題與多選題
+* qti-inline-choice-interaction 英文綜合測驗 inline單選
+* qti-group-inline-choice-interaction 選填題
+* qti-gap-match-interaction 英文文意選填 空格配對
