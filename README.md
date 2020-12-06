@@ -372,3 +372,7 @@ use cml2json.js to convert cml file to jsonfile
 2. In heroku-mlab web site
     * http://localhost:3000/cmlbank/qti/create, upload sat2_bio_2016_10_11.json as a cml item.
     * http://localhost:3000/cmlbank/qtitestform, random sample 5 items as a testfrom.
+
+## QTI3.0
+2020/12/6 以前用 getscore21.js(getscore.js), cmlController21.js(cmlController.js) 搭配 QTI2.1 (qti-demo)的 cml/json。
+2020/12/6 以後用 getscore30.js, cmlController30.js 搭配 QTI3.0(qti-demo) 的 cml/json。

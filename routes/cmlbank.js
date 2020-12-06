@@ -4,7 +4,7 @@ var multer  = require('multer')
 var upload=multer() //multer({ dest: 'uploads/' }) for save file in uploads directory
 
 // Require controller modules
-var cml_controller = require('../controllers/cmlController');
+var cml_controller = require('../controllers/cmlController30');
 /// qti ROUTES ///
 
 /* GET catalog home page. */

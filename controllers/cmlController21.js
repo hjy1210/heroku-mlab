@@ -4,7 +4,7 @@ var async = require('async');
 var xmlStr2jsonStr = require('./xmljsonutil').xmlStr2jsonStr
 var DOMParser = require('xmldom').DOMParser;
 var XMLSerializer = require('xmldom').XMLSerializer
-var getScore = require('./getscore')
+var getScore = require('./getscore21')
 
 var qtis
 exports.index = function (req, res) {
