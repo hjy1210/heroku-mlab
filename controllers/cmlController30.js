@@ -40,7 +40,7 @@ exports.testform_get = function (req, res, next) {
       //Successful, so render
       //console.log(list_qtis)
       var n = list_qtis.length
-      var testLength = 5
+      var testLength = 10
       var results = []
       for (var i = 0; i < testLength; i++) {
         n = list_qtis.length
