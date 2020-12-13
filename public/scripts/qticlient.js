@@ -12,7 +12,7 @@ function getResponse(identifier, name) {
     else if (elements[i].tagName.toLowerCase() === "input") {
       if (elements[i].getAttribute("type")=="checkbox" && elements[i].checked) res.push(elements[i].getAttribute("value"))
       if (elements[i].getAttribute("type")=="radio" && elements[i].checked) res=elements[i].getAttribute("value")
-      if (elements[i].getAttribute("type")=="text") res=elements[i].getAttribute("value")
+      if (elements[i].getAttribute("type")=="text") res=elements[i].value
     }
     else if (elements[i].tagName.toLowerCase() === "option" && elements[i].selected) res=elements[i].getAttribute("value")
   }

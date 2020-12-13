@@ -12,7 +12,7 @@ function score(scoreInfo, itemid, node) {
 				//  return scoreInfo[itemid].outcomes[id]
 				//}
 				return scoreInfo[itemid].outcomes[id];
-			} else if (scoreInfo[itemid].responses[id] != null) {
+			} else if ((scoreInfo[itemid].responses[id] != null) && (scoreInfo[itemid].responses[id].length != 0)) {
 				//if (typeof scoreInfo[itemid].responses[id]==="object"){
 				//  return scoreInfo[itemid].responses[id][0]
 				//} else {
@@ -32,7 +32,8 @@ function score(scoreInfo, itemid, node) {
 			return !v;
 		case 'qti-set-outcome-value':
 			//itemInfo.outcomeInfo[node.getAttribute("identifier")] = score(scoreInfo,node.childNodes[0])
-			scoreInfo[itemid].outcomes[node.getAttribute('identifier')] = score(scoreInfo, itemid, node.childNodes[0]);
+			var v = score(scoreInfo, itemid, node.childNodes[0])
+			scoreInfo[itemid].outcomes[node.getAttribute('identifier')] = v;
 			return;
 		case 'qti-sum':
 			var sum = 0;
