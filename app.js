@@ -25,7 +25,7 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 
 var app = express();
-
+app.set('json spaces', 2)
 app.use(helmet());
 
 // view engine setup

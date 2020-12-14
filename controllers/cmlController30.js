@@ -199,7 +199,10 @@ exports.qti_detail_post = function (req, res, next) {
     }
 
     var scoreResults = getScore(scoreInfo)
-    res.send(JSON.stringify(scoreResults, null, 2))
+    //res.render('cml_test_report',{scoreResults:scoreResults})
+    //res.send(JSON.stringify(scoreResults, null, 2))
+    ///// https://blog.fullstacktraining.com/res-json-vs-res-send-vs-res-end-in-express/
+    res.json(scoreResults)  // already execute app.set('json spaces', 2) in app.js
   })
 }
 
